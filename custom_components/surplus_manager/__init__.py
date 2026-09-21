@@ -32,6 +32,8 @@ from .manager import SurplusManager
 SERVICE_ENTRY = vol.Required("config_entry_id")
 SERVICE_CONSUMER_ID = vol.Required("consumer_id")
 
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     hass.data.setdefault(DOMAIN, {})
