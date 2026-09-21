@@ -3,7 +3,7 @@ name: Bootstrap repository
 on:
   push:
     paths:
-      - bootstrap.zip
+      - bootstrap.part3
 
 permissions:
   contents: write
@@ -14,10 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Rebuild prepared archive
+        run: |
+          cat bootstrap.part1 bootstrap.part2 bootstrap.part3 | base64 -d > bootstrap.zip
+
       - name: Unpack prepared integration
         run: |
           unzip -o bootstrap.zip
-          rm -f bootstrap.zip
+          rm -f bootstrap.zip bootstrap.part1 bootstrap.part2 bootstrap.part3
           rm -rf custom_components/surplus_manager/__pycache__
 
       - name: Commit unpacked repository
