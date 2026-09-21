@@ -1,0 +1,22 @@
+{
+  "title": "Überschussmanager",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Überschussmanager einrichten",
+        "description": "Der Netzleistungssensor muss die Leistung am Netzanschlusspunkt liefern. Bei 'Einspeisung negativ' gilt: Bezug positiv, Einspeisung negativ.",
+        "data": {
+          "name": "Name",
+          "grid_power_entity": "Netzleistungssensor",
+          "export_is_negative": "Einspeisung ist negativ",
+          "reserve_w": "Einschaltreserve",
+          "max_import_w": "Erlaubter Netzbezug",
+          "start_delay_s": "Einschaltverzögerung",
+          "stop_delay_s": "Ausschaltverzögerung",
+          "settle_s": "Beruhigungszeit nach Schalten",
+          "scan_interval_s": "Prüfintervall"
+        }
+      }
+    }
+  }
+}
