@@ -1,0 +1,43 @@
+add_consumer:
+  name: Verbraucher anlegen
+  description: Legt einen neuen Verbraucher an.
+
+update_consumer:
+  name: Verbraucher bearbeiten
+  description: Ändert einen vorhandenen Verbraucher.
+
+remove_consumer:
+  name: Verbraucher entfernen
+  description: Entfernt einen Verbraucher nur aus dem Überschussmanager.
+
+move_consumer:
+  name: Verbraucher verschieben
+  description: Verschiebt einen Verbraucher in der EIN- oder AUS-Prioritätsliste.
+
+set_consumer_enabled:
+  name: Verbraucher freigeben/sperren
+  description: Aktiviert oder deaktiviert einen Verbraucher für die automatische Regelung.
+
+set_enabled:
+  name: Regelung ein/aus
+  description: Schaltet die gesamte Überschussregelung ein oder aus.
+
+set_manual:
+  name: Verbraucher manuell schalten
+  description: Schaltet einen Verbraucher manuell ein oder aus und gibt ihn danach wieder an AUTO zurück.
+
+set_mode:
+  name: Betriebsmodus
+  description: Setzt AUTO, TEST oder PAUSE.
+
+add_battery_guard:
+  name: Speicherwächter anlegen
+  description: Fügt einen Speicher-Leistungssensor mit Abschaltschwelle hinzu.
+
+update_battery_guard:
+  name: Speicherwächter bearbeiten
+  description: Ändert einen Speicherwächter.
+
+remove_battery_guard:
+  name: Speicherwächter entfernen
+  description: Entfernt einen Speicherwächter.
