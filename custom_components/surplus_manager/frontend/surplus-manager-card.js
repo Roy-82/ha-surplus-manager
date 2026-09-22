@@ -214,11 +214,18 @@ class SurplusManagerCard extends HTMLElement {
             </div>
           </div>
 
-          <div class="settingsSection settingsStatus ${gridValid ? "okBox" : "badBox"}">
-            <div class="settingsStatusIcon"><ha-icon icon="${gridValid ? "mdi:check-network" : "mdi:network-off"}"></ha-icon></div>
-            <div>
-              <div class="sectionTitle">Netzsensor ${gridValid ? "OK" : "Fehler"}</div>
-              <div class="meta">${this._esc(a.grid_power_entity || "–")}</div>
+          <div class="settingsSection ${gridValid ? "okBox" : "badBox"}">
+            <div class="gridSensorHeader">
+              <div class="settingsStatusIcon"><ha-icon icon="${gridValid ? "mdi:check-network" : "mdi:network-off"}"></ha-icon></div>
+              <div>
+                <div class="sectionTitle">Netzsensor ${gridValid ? "OK" : "Fehler"}</div>
+                <div class="meta">Sensor für Netzbezug und Einspeisung</div>
+              </div>
+            </div>
+            <ha-entity-picker id="settingsGridSensor"></ha-entity-picker>
+            <div class="gridSensorActions">
+              <div class="hint">Positiv = Netzbezug · negativ = Einspeisung</div>
+              <button type="button" id="saveGridSensor" class="primary compactPrimary">Speichern</button>
             </div>
           </div>
 
@@ -613,6 +620,10 @@ class SurplusManagerCard extends HTMLElement {
         .compactPrimary { height:42px; border:0; border-radius:9px; padding:0 16px; cursor:pointer; background:var(--primary-color); color:var(--text-primary-color, white); }
         .settingsStatus { display:flex; align-items:center; gap:10px; }
         .settingsStatus .sectionTitle { margin-bottom:2px; }
+        .gridSensorHeader { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+        .gridSensorHeader .sectionTitle { margin-bottom:2px; }
+        #settingsGridSensor { display:block; width:100%; }
+        .gridSensorActions { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:9px; }
         .settingsStatusIcon { width:34px; height:34px; display:grid; place-items:center; }
         .settingsStatusIcon ha-icon { --mdc-icon-size:25px; }
         .okBox { border-color:color-mix(in srgb, var(--success-color, #43a047) 35%, var(--sm-border)); }
@@ -695,6 +706,25 @@ class SurplusManagerCard extends HTMLElement {
     q("#settingsButton")?.addEventListener("click", () => q("#settingsEditor")?.showModal());
     q("#closeSettingsEditor")?.addEventListener("click", () => q("#settingsEditor")?.close());
     q("#settingsEditor")?.addEventListener("close", () => this._queueRender());
+    const gridPicker = q("#settingsGridSensor");
+    if (gridPicker) {
+      gridPicker.hass = this._hass;
+      gridPicker.value = state?.attributes?.grid_power_entity || "";
+      gridPicker.includeDomains = ["sensor"];
+      gridPicker.allowCustomEntity = true;
+    }
+    q("#saveGridSensor")?.addEventListener("click", async () => {
+      const entityId = String(gridPicker?.value || "").trim();
+      if (!entityId || !entityId.startsWith("sensor.")) {
+        alert("Bitte einen gültigen Sensor auswählen.");
+        return;
+      }
+      await this._hass.callService("surplus_manager", "set_grid_sensor", {
+        config_entry_id: entryId,
+        entity_id: entityId,
+      });
+      q("#settingsEditor")?.close();
+    });
     q("#openBatteryEditor")?.addEventListener("click", () => q("#batteryEditor")?.showModal());
     q("#saveReserve")?.addEventListener("click", async () => {
       const reserve = Number(q("#settingsReserve")?.value);
