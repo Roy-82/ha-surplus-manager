@@ -1,0 +1,55 @@
+{
+  "title": "Gestor de excedentes",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurar el gestor de excedentes",
+        "description": "El sensor de potencia de red debe proporcionar la potencia en el punto de conexión. Si «La exportación es negativa» está activado, la importación es positiva y la exportación es negativa.",
+        "data": {
+          "name": "Nombre",
+          "language": "Idioma",
+          "grid_power_entity": "Sensor de potencia de red",
+          "export_is_negative": "La exportación a red es negativa",
+          "reserve_w": "Reserva de conexión",
+          "max_import_w": "Importación de red permitida",
+          "start_delay_s": "Retardo de conexión",
+          "stop_delay_s": "Retardo de desconexión",
+          "settle_s": "Tiempo de estabilización tras conmutar",
+          "scan_interval_s": "Intervalo de comprobación"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ajustes del gestor de excedentes",
+        "description": "Cambiar los ajustes básicos del gestor de excedentes.",
+        "data": {
+          "name": "Nombre",
+          "language": "Idioma",
+          "grid_power_entity": "Sensor de potencia de red",
+          "export_is_negative": "La exportación a red es negativa",
+          "reserve_w": "Reserva de conexión",
+          "max_import_w": "Importación de red permitida",
+          "start_delay_s": "Retardo de conexión",
+          "stop_delay_s": "Retardo de desconexión",
+          "settle_s": "Tiempo de estabilización tras conmutar",
+          "scan_interval_s": "Intervalo de comprobación"
+        }
+      }
+    }
+  },
+  "selector": {
+    "language": {
+      "options": {
+        "auto": "Automático (Home Assistant)",
+        "de": "Deutsch",
+        "en": "English",
+        "fr": "Français",
+        "es": "Español",
+        "nl": "Nederlands"
+      }
+    }
+  }
+}
