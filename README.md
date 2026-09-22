@@ -23,7 +23,7 @@ Ab v2.1 wird die Karte direkt mit der Integration ausgeliefert. `/config/www` is
 
 Unter Einstellungen → Dashboards → Ressourcen einmalig eintragen:
 
-- URL: `/surplus_manager/surplus-manager-card.js?v=2.3.1`
+- URL: `/surplus_manager/surplus-manager-card.js?v=2.3.2`
 - Typ: JavaScript-Modul
 
 Danach werden Backend und Karte gemeinsam über HACS aktualisiert.
@@ -83,3 +83,9 @@ title: Prioritätenliste
 
 - Feinschliff der Übersetzungen für Speicherstatus und manuelle Bedienung.
 - Frontend-Versionsanzeige und Cache-Version auf v2.3.1 aktualisiert.
+
+
+## v2.3.2
+
+- Anzeigeoption im Zahnrad ergänzt: Hilfetexte können ein- oder ausgeblendet werden.
+- Cache-/Frontend-Version auf v2.3.2 aktualisiert.
