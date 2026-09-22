@@ -18,6 +18,7 @@ from .const import (
     CONF_STOP_DELAY_S,
     CONF_SETTLE_S,
     CONF_SCAN_INTERVAL_S,
+    CONF_LANGUAGE,
     DEFAULT_NAME,
     DEFAULT_EXPORT_IS_NEGATIVE,
     DEFAULT_RESERVE_W,
@@ -26,6 +27,8 @@ from .const import (
     DEFAULT_STOP_DELAY_S,
     DEFAULT_SETTLE_S,
     DEFAULT_SCAN_INTERVAL_S,
+    DEFAULT_LANGUAGE,
+    SUPPORTED_LANGUAGES,
 )
 
 
@@ -33,6 +36,16 @@ def _schema(values: dict):
     return vol.Schema(
         {
             vol.Required(CONF_NAME, default=values.get(CONF_NAME, DEFAULT_NAME)): str,
+            vol.Required(
+                CONF_LANGUAGE,
+                default=values.get(CONF_LANGUAGE, DEFAULT_LANGUAGE),
+            ): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=SUPPORTED_LANGUAGES,
+                    mode=selector.SelectSelectorMode.DROPDOWN,
+                    translation_key="language",
+                )
+            ),
             vol.Required(
                 CONF_GRID_POWER_ENTITY,
                 default=values.get(CONF_GRID_POWER_ENTITY),
