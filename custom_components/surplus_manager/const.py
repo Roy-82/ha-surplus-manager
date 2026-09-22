@@ -12,6 +12,7 @@ CONF_START_DELAY_S = "start_delay_s"
 CONF_STOP_DELAY_S = "stop_delay_s"
 CONF_SETTLE_S = "settle_s"
 CONF_SCAN_INTERVAL_S = "scan_interval_s"
+CONF_LANGUAGE = "language"
 
 DEFAULT_NAME = "Überschussmanager"
 DEFAULT_EXPORT_IS_NEGATIVE = True
@@ -21,6 +22,8 @@ DEFAULT_START_DELAY_S = 60
 DEFAULT_STOP_DELAY_S = 30
 DEFAULT_SETTLE_S = 20
 DEFAULT_SCAN_INTERVAL_S = 5
+DEFAULT_LANGUAGE = "auto"
+SUPPORTED_LANGUAGES = ["auto", "de", "en", "fr", "es", "nl"]
 
 STORAGE_VERSION = 1
 STORAGE_KEY_PREFIX = "surplus_manager"
@@ -35,6 +38,7 @@ SERVICE_SET_MANUAL = "set_manual"
 SERVICE_SET_MODE = "set_mode"
 SERVICE_SET_RESERVE = "set_reserve"
 SERVICE_SET_GRID_SENSOR = "set_grid_sensor"
+SERVICE_SET_LANGUAGE = "set_language"
 
 MODE_AUTO = "auto"
 MODE_TEST = "test"
