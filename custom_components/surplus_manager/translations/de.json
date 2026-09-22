@@ -4,9 +4,10 @@
     "step": {
       "user": {
         "title": "Überschussmanager einrichten",
-        "description": "Der Netzleistungssensor muss die Leistung am Netzanschlusspunkt liefern. Bei 'Einspeisung negativ' gilt: Bezug positiv, Einspeisung negativ.",
+        "description": "Der Netzleistungssensor muss die Leistung am Netzanschlusspunkt liefern. Bei aktivierter Option „Einspeisung ist negativ“ gilt: Bezug positiv, Einspeisung negativ.",
         "data": {
           "name": "Name",
+          "language": "Sprache",
           "grid_power_entity": "Netzleistungssensor",
           "export_is_negative": "Einspeisung ist negativ",
           "reserve_w": "Einschaltreserve",
@@ -16,6 +17,38 @@
           "settle_s": "Beruhigungszeit nach Schalten",
           "scan_interval_s": "Prüfintervall"
         }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Überschussmanager – Einstellungen",
+        "description": "Grundlegende Einstellungen des Überschussmanagers ändern.",
+        "data": {
+          "name": "Name",
+          "language": "Sprache",
+          "grid_power_entity": "Netzleistungssensor",
+          "export_is_negative": "Einspeisung ist negativ",
+          "reserve_w": "Einschaltreserve",
+          "max_import_w": "Erlaubter Netzbezug",
+          "start_delay_s": "Einschaltverzögerung",
+          "stop_delay_s": "Ausschaltverzögerung",
+          "settle_s": "Beruhigungszeit nach Schalten",
+          "scan_interval_s": "Prüfintervall"
+        }
+      }
+    }
+  },
+  "selector": {
+    "language": {
+      "options": {
+        "auto": "Automatisch (Home Assistant)",
+        "de": "Deutsch",
+        "en": "English",
+        "fr": "Français",
+        "es": "Español",
+        "nl": "Nederlands"
       }
     }
   }
