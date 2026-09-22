@@ -33,6 +33,7 @@ SERVICE_SET_CONSUMER_ENABLED = "set_consumer_enabled"
 SERVICE_SET_ENABLED = "set_enabled"
 SERVICE_SET_MANUAL = "set_manual"
 SERVICE_SET_MODE = "set_mode"
+SERVICE_SET_RESERVE = "set_reserve"
 
 MODE_AUTO = "auto"
 MODE_TEST = "test"
