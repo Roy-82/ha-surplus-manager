@@ -23,10 +23,16 @@ Ab v2.1 wird die Karte direkt mit der Integration ausgeliefert. `/config/www` is
 
 Unter Einstellungen → Dashboards → Ressourcen einmalig eintragen:
 
-- URL: `/surplus_manager/surplus-manager-card.js`
+- URL: `/surplus_manager/surplus-manager-card.js?v=2.3.0`
 - Typ: JavaScript-Modul
 
 Danach werden Backend und Karte gemeinsam über HACS aktualisiert.
+
+## Sprachen
+
+Der Überschussmanager unterstützt Deutsch, Englisch, Französisch, Spanisch und Niederländisch.
+Standardmäßig wird die Sprache von Home Assistant übernommen. Eine feste Sprache kann sowohl
+bei der Einrichtung als auch später direkt über das Zahnrad in der Dashboard-Karte gewählt werden.
 
 ```yaml
 type: custom:surplus-manager-card
@@ -59,3 +65,15 @@ title: Prioritätenliste
 
 - Netzsensor kann direkt im Einstellungs-Popup der Dashboard-Karte geändert werden.
 - Dashboard-Screenshot in der GitHub-Beschreibung ergänzt.
+
+
+## v2.3.0
+
+- Mehrsprachige Oberfläche: Deutsch, Englisch, Französisch, Spanisch und Niederländisch.
+- Automatische Übernahme der Home-Assistant-Sprache oder manuelle Sprachauswahl.
+- Sprachauswahl bereits bei der Einrichtung sowie später im Zahnrad-Popup.
+- Einheitliche, sprachabhängige W/kW-Darstellung.
+- Konfigurationsprüfung für Netzsensor, Verbraucher und Speicher-Sensoren.
+- Neuer Diagnosebereich mit Netzleistung, Überschuss, Bezug, Reserve, Regelstatus und nächstem Verbraucher.
+- Versionsanzeige im Einstellungs-Popup.
+- Netzsensor bleibt direkt im Einstellungs-Popup änderbar.
