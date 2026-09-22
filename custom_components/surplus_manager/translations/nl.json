@@ -1,0 +1,55 @@
+{
+  "title": "Overschotmanager",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Overschotmanager instellen",
+        "description": "De netvermogenssensor moet het vermogen op het netaansluitpunt leveren. Als ‘Teruglevering is negatief’ is ingeschakeld, is netafname positief en teruglevering negatief.",
+        "data": {
+          "name": "Naam",
+          "language": "Taal",
+          "grid_power_entity": "Netvermogenssensor",
+          "export_is_negative": "Teruglevering is negatief",
+          "reserve_w": "Inschakelreserve",
+          "max_import_w": "Toegestane netafname",
+          "start_delay_s": "Inschakelvertraging",
+          "stop_delay_s": "Uitschakelvertraging",
+          "settle_s": "Stabilisatietijd na schakelen",
+          "scan_interval_s": "Controle-interval"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Overschotmanager-instellingen",
+        "description": "Wijzig de basisinstellingen van de overschotmanager.",
+        "data": {
+          "name": "Naam",
+          "language": "Taal",
+          "grid_power_entity": "Netvermogenssensor",
+          "export_is_negative": "Teruglevering is negatief",
+          "reserve_w": "Inschakelreserve",
+          "max_import_w": "Toegestane netafname",
+          "start_delay_s": "Inschakelvertraging",
+          "stop_delay_s": "Uitschakelvertraging",
+          "settle_s": "Stabilisatietijd na schakelen",
+          "scan_interval_s": "Controle-interval"
+        }
+      }
+    }
+  },
+  "selector": {
+    "language": {
+      "options": {
+        "auto": "Automatisch (Home Assistant)",
+        "de": "Deutsch",
+        "en": "English",
+        "fr": "Français",
+        "es": "Español",
+        "nl": "Nederlands"
+      }
+    }
+  }
+}
