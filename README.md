@@ -3,7 +3,7 @@
 PV-Überschussmanager für Home Assistant mit Prioritäten, manueller Übersteuerung,
 Testmodus, Speicherwächtern und eigener Dashboard-Karte.
 
-![Überschussmanager Dashboard](images/dashboard.png)
+![Überschussmanager Dashboard](images/dashboard.svg)
 
 ## Installation über HACS
 
