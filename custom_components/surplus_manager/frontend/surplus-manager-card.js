@@ -4,7 +4,7 @@ const SURPLUS_MANAGER_TRANSLATIONS = {
   de: {},
   en: {
     "Überschussmanager":"Surplus Manager","Überschuss":"Surplus","Bezug":"Grid import","Aktive Last":"Active load",
-    "Speicher OK":"Battery OK","Kein Speicherwächter":"No battery guard","Netzsensor Fehler":"Grid sensor error",
+    "Speicher OK":"Battery OK","Speicherentladung":"Battery discharge","Kein Speicherwächter":"No battery guard","Netzsensor Fehler":"Grid sensor error",
     "Einstellungen":"Settings","Schließen":"Close","Gesamte Regelung ein/aus":"Enable/disable control",
     "Eine Position hoch":"Move up","Eine Position runter":"Move down","Verbraucher hinzufügen":"Add consumer",
     "Markierten Verbraucher bearbeiten":"Edit selected consumer","Markierten Verbraucher entfernen":"Remove selected consumer",
@@ -38,8 +38,8 @@ const SURPLUS_MANAGER_TRANSLATIONS = {
   },
   fr: {
     "Überschussmanager":"Gestionnaire de surplus","Überschuss":"Surplus","Bezug":"Import réseau","Aktive Last":"Charge active",
-    "Speicher OK":"Batterie OK","Kein Speicherwächter":"Aucune surveillance batterie","Netzsensor Fehler":"Erreur capteur réseau",
-    "Einstellungen":"Paramètres","Schließen":"Fermer","Gesamte Regelung ein/aus":"Activer/désactiver la régulation",
+    "Speicher OK":"Batterie OK","Speicherentladung":"Décharge batterie","Kein Speicherwächter":"Aucune surveillance batterie","Netzsensor Fehler":"Erreur capteur réseau",
+    "Einstellungen":"Paramètres","Manuell ausschalten und wieder AUTO aktivieren":"Désactiver manuellement et revenir à AUTO","Gerät manuell einschalten":"Activer l’appareil manuellement","Schließen":"Fermer","Gesamte Regelung ein/aus":"Activer/désactiver la régulation",
     "Eine Position hoch":"Monter","Eine Position runter":"Descendre","Verbraucher hinzufügen":"Ajouter un consommateur",
     "Markierten Verbraucher bearbeiten":"Modifier le consommateur sélectionné","Markierten Verbraucher entfernen":"Supprimer le consommateur sélectionné",
     "Noch keine Verbraucher.":"Aucun consommateur.","Mit + den ersten anlegen.":"Utilisez + pour ajouter le premier.",
@@ -68,8 +68,8 @@ const SURPLUS_MANAGER_TRANSLATIONS = {
   },
   es: {
     "Überschussmanager":"Gestor de excedentes","Überschuss":"Excedente","Bezug":"Importación","Aktive Last":"Carga activa",
-    "Speicher OK":"Batería OK","Kein Speicherwächter":"Sin vigilancia de batería","Netzsensor Fehler":"Error del sensor de red",
-    "Einstellungen":"Ajustes","Schließen":"Cerrar","Gesamte Regelung ein/aus":"Activar/desactivar control",
+    "Speicher OK":"Batería OK","Speicherentladung":"Descarga de batería","Kein Speicherwächter":"Sin vigilancia de batería","Netzsensor Fehler":"Error del sensor de red",
+    "Einstellungen":"Ajustes","Manuell ausschalten und wieder AUTO aktivieren":"Apagar manualmente y volver a AUTO","Gerät manuell einschalten":"Encender el dispositivo manualmente","Schließen":"Cerrar","Gesamte Regelung ein/aus":"Activar/desactivar control",
     "Eine Position hoch":"Subir","Eine Position runter":"Bajar","Verbraucher hinzufügen":"Añadir consumidor",
     "Markierten Verbraucher bearbeiten":"Editar consumidor seleccionado","Markierten Verbraucher entfernen":"Eliminar consumidor seleccionado",
     "Noch keine Verbraucher.":"Aún no hay consumidores.","Mit + den ersten anlegen.":"Use + para añadir el primero.",
@@ -96,8 +96,8 @@ const SURPLUS_MANAGER_TRANSLATIONS = {
   },
   nl: {
     "Überschussmanager":"Overschotmanager","Überschuss":"Overschot","Bezug":"Netafname","Aktive Last":"Actieve belasting",
-    "Speicher OK":"Batterij OK","Kein Speicherwächter":"Geen batterijbewaking","Netzsensor Fehler":"Fout netsensor",
-    "Einstellungen":"Instellingen","Schließen":"Sluiten","Gesamte Regelung ein/aus":"Regeling aan/uit",
+    "Speicher OK":"Batterij OK","Speicherentladung":"Batterijontlading","Kein Speicherwächter":"Geen batterijbewaking","Netzsensor Fehler":"Fout netsensor",
+    "Einstellungen":"Instellingen","Manuell ausschalten und wieder AUTO aktivieren":"Handmatig uitschakelen en terug naar AUTO","Gerät manuell einschalten":"Apparaat handmatig inschakelen","Schließen":"Sluiten","Gesamte Regelung ein/aus":"Regeling aan/uit",
     "Eine Position hoch":"Omhoog","Eine Position runter":"Omlaag","Verbraucher hinzufügen":"Verbruiker toevoegen",
     "Markierten Verbraucher bearbeiten":"Geselecteerde verbruiker bewerken","Markierten Verbraucher entfernen":"Geselecteerde verbruiker verwijderen",
     "Noch keine Verbraucher.":"Nog geen verbruikers.","Mit + den ersten anlegen.":"Gebruik + om de eerste toe te voegen.",
@@ -253,7 +253,7 @@ class SurplusManagerCard extends HTMLElement {
         .replace(/^Überschuss(?=\s)/, this._tr("Überschuss"))
         .replace(/^Bezug(?=\s)/, this._tr("Bezug"))
         .replace(/^Aktive Last(?=\s)/, this._tr("Aktive Last"))
-        .replace(/^Speicherentladung(?=\s)/, this._tr("Speicher") + " ")
+        .replace(/^Speicherentladung(?=\s)/, this._tr("Speicherentladung"))
         .replace(/^Speicher (?=\d)/, this._tr("Speicher") + " ")
         .replace(/^Netzsensor OK$/, this._tr("Netzsensor") + " " + this._tr("OK"))
         .replace(/^Netzsensor Fehler$/, this._tr("Netzsensor") + " " + this._tr("Fehler"))
