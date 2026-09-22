@@ -21,8 +21,9 @@ class SurplusManagerCard extends HTMLElement {
   set hass(hass) {
     this._hass = hass;
     const editor = this.shadowRoot?.querySelector("#editor");
+    const settingsEditor = this.shadowRoot?.querySelector("#settingsEditor");
     const batteryEditor = this.shadowRoot?.querySelector("#batteryEditor");
-    if (editor?.open || batteryEditor?.open) return;
+    if (editor?.open || settingsEditor?.open || batteryEditor?.open) return;
     this._queueRender();
   }
 
@@ -103,6 +104,11 @@ class SurplusManagerCard extends HTMLElement {
     const enabled = !!a.enabled;
     const gridValid = a.grid_valid !== false;
     const mode = a.mode || "auto";
+    const batteryGuards = a.battery_guards || [];
+    const triggeredBatteries = batteryGuards.filter((g) => g.triggered);
+    const batteryStatusText = triggeredBatteries.length
+      ? `Speicherentladung ${triggeredBatteries.map((g) => g.name).join(", ")}`
+      : batteryGuards.length ? "Speicher OK" : "Kein Speicherwächter";
 
     this.shadowRoot.innerHTML = `
       ${this._styles()}
@@ -112,67 +118,28 @@ class SurplusManagerCard extends HTMLElement {
             <div>
               <div class="titleRow">
                 <ha-icon icon="mdi:home-lightning-bolt"></ha-icon>
-                <div class="title">${this._esc(this._config.title || "Prioritätenliste")}</div>
+                <div class="title">Überschussmanager</div>
               </div>
               <div class="summary">
                 <span class="pill export"><ha-icon icon="mdi:transmission-tower-export"></ha-icon> Überschuss ${this._fmtW(a.export_w)}</span>
                 <span class="pill import"><ha-icon icon="mdi:transmission-tower-import"></ha-icon> Bezug ${this._fmtW(a.import_w)}</span>
                 <span class="pill load"><ha-icon icon="mdi:flash"></ha-icon> Aktive Last ${this._fmtW(a.total_active_power_w)}</span>
-                <span class="pill"><ha-icon icon="mdi:shield-half-full"></ha-icon> Reserve ${this._fmtW(a.reserve_w)}</span>
-                <span class="pill ${gridValid ? "ok" : "bad"}">
-                  <ha-icon icon="${gridValid ? "mdi:check-network" : "mdi:network-off"}"></ha-icon>
-                  ${gridValid ? "Netzsensor OK" : "Netzsensor FEHLER"}
+                <span class="pill ${!gridValid || triggeredBatteries.length ? "bad" : "ok"}">
+                  <ha-icon icon="${!gridValid ? "mdi:network-off" : triggeredBatteries.length ? "mdi:battery-alert" : "mdi:battery-check"}"></ha-icon>
+                  ${!gridValid ? "Netzsensor Fehler" : this._esc(batteryStatusText)}
                 </span>
-                <button id="batteryConfig" class="batteryConfig ${a.battery_guard_triggered ? "triggered" : ""}" title="Speicherwächter konfigurieren">
-                  <ha-icon icon="mdi:battery-arrow-down-outline"></ha-icon>
-                  Speicher ${a.battery_guards?.length || 0}
-                </button>
+                ${mode === "test" ? `<span class="pill testState"><ha-icon icon="mdi:test-tube"></ha-icon> TEST</span>` : ""}
               </div>
             </div>
-            <label class="master" title="Gesamte Regelung ein/aus">
-              <input id="masterToggle" type="checkbox" ${enabled ? "checked" : ""}>
-              <span></span>
-            </label>
-          </div>
-
-          ${!gridValid ? `
-            <div class="safetyBanner">
-              <ha-icon icon="mdi:shield-alert"></ha-icon>
-              Netzleistungssensor ist nicht verfügbar. Aus Sicherheitsgründen wird automatisch nichts ein- oder ausgeschaltet.
-            </div>` : ""}
-
-          <div class="modeBar">
-            <button data-mode="auto" class="${mode === "auto" ? "active auto" : ""}">
-              <ha-icon icon="mdi:auto-mode"></ha-icon> AUTO
-            </button>
-            <button data-mode="test" class="${mode === "test" ? "active test" : ""}">
-              <ha-icon icon="mdi:test-tube"></ha-icon> TEST
-            </button>
-            <button data-mode="pause" class="${mode === "pause" ? "active pause" : ""}">
-              <ha-icon icon="mdi:pause-circle-outline"></ha-icon> PAUSE
-            </button>
-          </div>
-
-          ${a.battery_guard_triggered ? `
-            <div class="batteryBanner">
-              <ha-icon icon="mdi:battery-alert"></ha-icon>
-              Speicherentladung über Grenzwert: ${this._esc(a.battery_guard_reason || "")}
-            </div>` : ""}
-
-          ${mode === "test" ? `
-            <div class="testBanner">
-              <ha-icon icon="mdi:test-tube"></ha-icon>
-              Testmodus: Es wird nichts geschaltet.
-              ${a.test_action ? `<b> Nächste Aktion: ${this._esc(a.test_action)}</b>` : ""}
-            </div>` : ""}
-
-          <div class="orderTabs">
-            <button id="startOrderTab" class="${this._orderMode === "start" ? "active" : ""}">
-              <ha-icon icon="mdi:power-plug"></ha-icon> EIN-Reihenfolge
-            </button>
-            <button id="stopOrderTab" class="${this._orderMode === "stop" ? "active" : ""}">
-              <ha-icon icon="mdi:power-plug-off"></ha-icon> AUS-Reihenfolge
-            </button>
+            <div class="headerActions">
+              <button id="settingsButton" class="iconButton" title="Einstellungen" aria-label="Einstellungen">
+                <ha-icon icon="mdi:cog"></ha-icon>
+              </button>
+              <label class="master" title="Gesamte Regelung ein/aus">
+                <input id="masterToggle" type="checkbox" ${enabled ? "checked" : ""}>
+                <span></span>
+              </label>
+            </div>
           </div>
 
           <div class="body">
@@ -201,12 +168,68 @@ class SurplusManagerCard extends HTMLElement {
             </div>
           </div>
 
+          <div class="orderTabs bottomTabs">
+            <button id="startOrderTab" class="${this._orderMode === "start" ? "active" : ""}">
+              <ha-icon icon="mdi:power-plug"></ha-icon> Reihenfolge beim Einschalten
+            </button>
+            <button id="stopOrderTab" class="${this._orderMode === "stop" ? "active" : ""}">
+              <ha-icon icon="mdi:power-plug-off"></ha-icon> Reihenfolge beim Abschalten
+            </button>
+          </div>
+
           <div class="footer">
             ${this._orderMode === "start" ? "Oben = zuerst einschalten" : "Oben = zuerst abschalten"}
             · Zeilen können am PC auch per Drag & Drop sortiert werden
           </div>
         </div>
       </ha-card>
+
+      <dialog id="settingsEditor">
+        <form id="settingsForm">
+          <div class="dialogHeader">
+            <div class="dialogTitle">Einstellungen</div>
+            <button type="button" id="closeSettingsEditor" class="dialogClose" title="Schließen" aria-label="Schließen">×</button>
+          </div>
+
+          <div class="settingsSection">
+            <div class="sectionTitle">Betriebsart</div>
+            <div class="modeBar settingsModeBar">
+              <button type="button" data-mode="auto" class="${mode === "auto" ? "active auto" : ""}">
+                <ha-icon icon="mdi:auto-mode"></ha-icon> AUTO
+              </button>
+              <button type="button" data-mode="test" class="test ${mode === "test" ? "active" : ""}">
+                <ha-icon icon="mdi:test-tube"></ha-icon> TEST
+              </button>
+            </div>
+            <div class="hint">AUTO regelt normal. TEST simuliert nur und schaltet keine Geräte.</div>
+          </div>
+
+          <div class="settingsSection">
+            <div class="sectionTitle">Reserve</div>
+            <div class="reserveRow">
+              <div class="unitInput"><input id="settingsReserve" type="number" min="0" step="10" value="${this._esc(a.reserve_w ?? 150)}"><span>W</span></div>
+              <button type="button" id="saveReserve" class="primary compactPrimary">Speichern</button>
+            </div>
+          </div>
+
+          <div class="settingsSection settingsStatus ${gridValid ? "okBox" : "badBox"}">
+            <div class="settingsStatusIcon"><ha-icon icon="${gridValid ? "mdi:check-network" : "mdi:network-off"}"></ha-icon></div>
+            <div>
+              <div class="sectionTitle">Netzsensor ${gridValid ? "OK" : "Fehler"}</div>
+              <div class="meta">${this._esc(a.grid_power_entity || "–")}</div>
+            </div>
+          </div>
+
+          <button type="button" id="openBatteryEditor" class="settingsSection storageSettings ${a.battery_guard_triggered ? "badBox" : "okBox"}">
+            <div class="settingsStatusIcon"><ha-icon icon="${a.battery_guard_triggered ? "mdi:battery-alert" : "mdi:battery-check"}"></ha-icon></div>
+            <div class="storageText">
+              <div class="sectionTitle">Speicher ${batteryGuards.length}</div>
+              <div class="meta">${this._esc(batteryStatusText)}</div>
+            </div>
+            <ha-icon icon="mdi:chevron-right"></ha-icon>
+          </button>
+        </form>
+      </dialog>
 
       <dialog id="batteryEditor">
         <form id="batteryForm">
@@ -388,6 +411,14 @@ class SurplusManagerCard extends HTMLElement {
         .titleRow ha-icon { color: var(--primary-color); --mdc-icon-size: 27px; }
         .title { font-size: 24px; font-weight: 650; line-height: 1.2; }
         .summary { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+        .headerActions { display:flex; align-items:center; gap:10px; }
+        .iconButton {
+          width:36px; height:36px; border-radius:50%; border:1px solid var(--sm-border);
+          background:var(--secondary-background-color); color:var(--primary-text-color);
+          cursor:pointer; display:grid; place-items:center; padding:0;
+        }
+        .iconButton:hover { filter:brightness(1.08); }
+        .iconButton ha-icon { --mdc-icon-size:21px; }
         .pill {
           font-size: 12px; padding: 5px 8px; border-radius: 999px;
           background: var(--secondary-background-color);
@@ -444,7 +475,7 @@ class SurplusManagerCard extends HTMLElement {
         }
 
         .modeBar {
-          display:grid; grid-template-columns: repeat(3, 1fr); gap:7px;
+          display:grid; grid-template-columns: repeat(2, 1fr); gap:7px;
           margin: 9px 0 12px;
         }
         .modeBar button, .orderTabs button {
@@ -466,6 +497,7 @@ class SurplusManagerCard extends HTMLElement {
         .orderTabs {
           display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;
         }
+        .bottomTabs { margin-top:12px; margin-bottom:8px; }
 
         .body { display:grid; grid-template-columns:1fr 50px; gap:10px; }
         .list {
@@ -564,6 +596,28 @@ class SurplusManagerCard extends HTMLElement {
         .master input:checked + span { background:var(--primary-color); }
         .master input:checked + span:after { transform:translateX(20px); }
 
+        .testState { color:var(--warning-color, #fb8c00); }
+        .settingsSection {
+          border:1px solid var(--sm-border); border-radius:12px; padding:12px;
+          margin-bottom:12px; background:var(--secondary-background-color);
+        }
+        .sectionTitle { font-size:13px; font-weight:700; color:var(--primary-text-color); margin-bottom:7px; }
+        .settingsModeBar { margin:0 0 7px; }
+        .reserveRow { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:end; }
+        .compactPrimary { height:42px; border:0; border-radius:9px; padding:0 16px; cursor:pointer; background:var(--primary-color); color:var(--text-primary-color, white); }
+        .settingsStatus { display:flex; align-items:center; gap:10px; }
+        .settingsStatus .sectionTitle { margin-bottom:2px; }
+        .settingsStatusIcon { width:34px; height:34px; display:grid; place-items:center; }
+        .settingsStatusIcon ha-icon { --mdc-icon-size:25px; }
+        .okBox { border-color:color-mix(in srgb, var(--success-color, #43a047) 35%, var(--sm-border)); }
+        .badBox { border-color:color-mix(in srgb, var(--error-color) 55%, var(--sm-border)); }
+        .storageSettings {
+          width:100%; display:grid; grid-template-columns:34px 1fr auto; align-items:center; gap:10px;
+          color:var(--primary-text-color); text-align:left; cursor:pointer; font:inherit;
+        }
+        .storageText .sectionTitle { margin-bottom:2px; }
+        .storageSettings:hover { filter:brightness(1.04); }
+
         dialog {
           width:min(540px, calc(100vw - 28px)); border:0; border-radius:18px; padding:0;
           color:var(--primary-text-color); background:var(--card-background-color);
@@ -631,9 +685,26 @@ class SurplusManagerCard extends HTMLElement {
     const state = this._state();
     const entryId = state?.attributes?.config_entry_id;
 
-    q("#batteryConfig")?.addEventListener("click", () => q("#batteryEditor")?.showModal());
+    q("#settingsButton")?.addEventListener("click", () => q("#settingsEditor")?.showModal());
+    q("#closeSettingsEditor")?.addEventListener("click", () => q("#settingsEditor")?.close());
+    q("#settingsEditor")?.addEventListener("close", () => this._queueRender());
+    q("#openBatteryEditor")?.addEventListener("click", () => q("#batteryEditor")?.showModal());
+    q("#saveReserve")?.addEventListener("click", async () => {
+      const reserve = Number(q("#settingsReserve")?.value);
+      if (!Number.isFinite(reserve) || reserve < 0) {
+        alert("Bitte eine gültige Reserve in Watt eintragen.");
+        return;
+      }
+      await this._hass.callService("surplus_manager", "set_reserve", {
+        config_entry_id: entryId,
+        reserve_w: reserve,
+      });
+      q("#settingsEditor")?.close();
+    });
     q("#closeBatteryEditor")?.addEventListener("click", () => q("#batteryEditor")?.close());
-    q("#batteryEditor")?.addEventListener("close", () => this._queueRender());
+    q("#batteryEditor")?.addEventListener("close", () => {
+      if (!q("#settingsEditor")?.open) this._queueRender();
+    });
     q("#resetBatteryForm")?.addEventListener("click", () => this._fillBatteryForm(null));
     q("#saveBattery")?.addEventListener("click", () => this._saveBattery());
     qa(".editBattery").forEach((btn) => {
@@ -668,6 +739,7 @@ class SurplusManagerCard extends HTMLElement {
           config_entry_id: entryId,
           mode: button.dataset.mode,
         });
+        qa(".modeBar button").forEach((b) => b.classList.toggle("active", b === button));
       });
     });
 
