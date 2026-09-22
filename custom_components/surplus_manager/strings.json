@@ -1,21 +1,54 @@
 {
-  "title": "Überschussmanager",
+  "title": "Surplus Manager",
   "config": {
     "step": {
       "user": {
-        "title": "Überschussmanager einrichten",
-        "description": "Der Netzleistungssensor muss die Leistung am Netzanschlusspunkt liefern. Bei 'Einspeisung negativ' gilt: Bezug positiv, Einspeisung negativ.",
+        "title": "Set up Surplus Manager",
+        "description": "The grid power sensor must provide the power at the grid connection point. If 'Export is negative' is enabled, grid import is positive and grid export is negative.",
         "data": {
           "name": "Name",
-          "grid_power_entity": "Netzleistungssensor",
-          "export_is_negative": "Einspeisung ist negativ",
-          "reserve_w": "Einschaltreserve",
-          "max_import_w": "Erlaubter Netzbezug",
-          "start_delay_s": "Einschaltverzögerung",
-          "stop_delay_s": "Ausschaltverzögerung",
-          "settle_s": "Beruhigungszeit nach Schalten",
-          "scan_interval_s": "Prüfintervall"
+          "language": "Language",
+          "grid_power_entity": "Grid power sensor",
+          "export_is_negative": "Grid export is negative",
+          "reserve_w": "Switch-on reserve",
+          "max_import_w": "Allowed grid import",
+          "start_delay_s": "Switch-on delay",
+          "stop_delay_s": "Switch-off delay",
+          "settle_s": "Settling time after switching",
+          "scan_interval_s": "Scan interval"
         }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Surplus Manager settings",
+        "description": "Change the basic settings of the Surplus Manager.",
+        "data": {
+          "name": "Name",
+          "language": "Language",
+          "grid_power_entity": "Grid power sensor",
+          "export_is_negative": "Grid export is negative",
+          "reserve_w": "Switch-on reserve",
+          "max_import_w": "Allowed grid import",
+          "start_delay_s": "Switch-on delay",
+          "stop_delay_s": "Switch-off delay",
+          "settle_s": "Settling time after switching",
+          "scan_interval_s": "Scan interval"
+        }
+      }
+    }
+  },
+  "selector": {
+    "language": {
+      "options": {
+        "auto": "Automatic (Home Assistant)",
+        "de": "Deutsch",
+        "en": "English",
+        "fr": "Français",
+        "es": "Español",
+        "nl": "Nederlands"
       }
     }
   }
