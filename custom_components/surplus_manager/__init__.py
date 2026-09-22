@@ -23,6 +23,7 @@ from .const import (
     SERVICE_SET_MANUAL,
     SERVICE_SET_MODE,
     SERVICE_SET_RESERVE,
+    SERVICE_SET_GRID_SENSOR,
     SERVICE_ADD_BATTERY_GUARD,
     SERVICE_UPDATE_BATTERY_GUARD,
     SERVICE_REMOVE_BATTERY_GUARD,
@@ -100,6 +101,13 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     async def set_reserve(call: ServiceCall):
         manager = await _get_manager(call)
         await manager.async_set_reserve(call.data["reserve_w"])
+
+    async def set_grid_sensor(call: ServiceCall):
+        manager = await _get_manager(call)
+        entity_id = call.data["entity_id"]
+        options = dict(manager.entry.options)
+        options["grid_power_entity"] = entity_id
+        hass.config_entries.async_update_entry(manager.entry, options=options)
 
     async def add_battery_guard(call: ServiceCall):
         manager = await _get_manager(call)
@@ -241,6 +249,18 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                 {
                     SERVICE_ENTRY: cv.string,
                     vol.Required("reserve_w"): vol.Coerce(float),
+                }
+            ),
+        )
+
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_SET_GRID_SENSOR,
+            set_grid_sensor,
+            schema=vol.Schema(
+                {
+                    SERVICE_ENTRY: cv.string,
+                    vol.Required("entity_id"): cv.entity_id,
                 }
             ),
         )
