@@ -168,18 +168,20 @@ class SurplusManagerCard extends HTMLElement {
             </div>
           </div>
 
-          <div class="orderTabs bottomTabs">
-            <button id="startOrderTab" class="${this._orderMode === "start" ? "active" : ""}">
-              <ha-icon icon="mdi:power-plug"></ha-icon> Reihenfolge beim Einschalten
-            </button>
-            <button id="stopOrderTab" class="${this._orderMode === "stop" ? "active" : ""}">
-              <ha-icon icon="mdi:power-plug-off"></ha-icon> Reihenfolge beim Abschalten
-            </button>
-          </div>
+          <div class="listControls">
+            <div class="footer">
+              ${this._orderMode === "start" ? "Oben = zuerst einschalten" : "Oben = zuerst abschalten"}
+              · Zeilen können am PC auch per Drag & Drop sortiert werden
+            </div>
 
-          <div class="footer">
-            ${this._orderMode === "start" ? "Oben = zuerst einschalten" : "Oben = zuerst abschalten"}
-            · Zeilen können am PC auch per Drag & Drop sortiert werden
+            <div class="orderTabs bottomTabs">
+              <button id="startOrderTab" class="${this._orderMode === "start" ? "active" : ""}">
+                <ha-icon icon="mdi:power-plug"></ha-icon> Reihenfolge beim Einschalten
+              </button>
+              <button id="stopOrderTab" class="${this._orderMode === "stop" ? "active" : ""}">
+                <ha-icon icon="mdi:power-plug-off"></ha-icon> Reihenfolge beim Abschalten
+              </button>
+            </div>
           </div>
         </div>
       </ha-card>
@@ -411,7 +413,8 @@ class SurplusManagerCard extends HTMLElement {
         .titleRow ha-icon { color: var(--primary-color); --mdc-icon-size: 27px; }
         .title { font-size: 24px; font-weight: 650; line-height: 1.2; }
         .summary { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
-        .headerActions { display:flex; align-items:center; gap:10px; }
+        .headerActions { display:flex; align-items:center; gap:10px; height:36px; }
+        .master { display:flex; align-items:center; height:36px; }
         .iconButton {
           width:36px; height:36px; border-radius:50%; border:1px solid var(--sm-border);
           background:var(--secondary-background-color); color:var(--primary-text-color);
@@ -497,7 +500,8 @@ class SurplusManagerCard extends HTMLElement {
         .orderTabs {
           display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;
         }
-        .bottomTabs { margin-top:12px; margin-bottom:8px; }
+        .bottomTabs { margin-top:8px; margin-bottom:0; }
+        .listControls { margin-right:60px; }
 
         .body { display:grid; grid-template-columns:1fr 50px; gap:10px; }
         .list {
@@ -510,7 +514,7 @@ class SurplusManagerCard extends HTMLElement {
           align-items:center; gap:5px; padding: 5px 10px;
           border-bottom:1px solid var(--sm-border);
           cursor:pointer; user-select:none;
-          transition: background .12s ease, opacity .12s ease;
+          transition:none;
         }
         .row:last-child { border-bottom:0; }
         .row:hover { background:color-mix(in srgb, var(--primary-text-color) 5%, transparent); }
@@ -553,7 +557,9 @@ class SurplusManagerCard extends HTMLElement {
           border-color:color-mix(in srgb, var(--error-color) 55%, var(--sm-border));
           background:color-mix(in srgb, var(--error-color) 9%, transparent);
         }
-        .status:hover { filter:brightness(1.08); }
+        .status { transition:none; }
+        .status:hover, .status:active { filter:none; transform:none; }
+        .status:disabled { opacity:1; }
 
         .err {
           display:inline-grid; place-items:center; width:17px; height:17px;
@@ -566,7 +572,7 @@ class SurplusManagerCard extends HTMLElement {
         }
         .empty ha-icon { --mdc-icon-size:32px; }
 
-        .toolbar { display:flex; flex-direction:column; gap:8px; }
+        .toolbar { display:flex; flex-direction:column; gap:8px; justify-content:center; align-self:stretch; }
         .toolbar button {
           width:46px; height:46px; border-radius:50%;
           border:1px solid var(--sm-border);
@@ -663,6 +669,7 @@ class SurplusManagerCard extends HTMLElement {
           .title { font-size:21px; }
           .summary { gap:5px; }
           .body { grid-template-columns:1fr 44px; gap:7px; }
+          .listControls { margin-right:51px; }
           .toolbar button { width:42px; height:42px; }
           .row {
             grid-template-columns: 20px 28px 20px 30px minmax(0,1fr);
