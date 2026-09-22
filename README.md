@@ -23,7 +23,7 @@ Ab v2.1 wird die Karte direkt mit der Integration ausgeliefert. `/config/www` is
 
 Unter Einstellungen → Dashboards → Ressourcen einmalig eintragen:
 
-- URL: `/surplus_manager/surplus-manager-card.js?v=2.3.0`
+- URL: `/surplus_manager/surplus-manager-card.js?v=2.3.1`
 - Typ: JavaScript-Modul
 
 Danach werden Backend und Karte gemeinsam über HACS aktualisiert.
@@ -77,3 +77,9 @@ title: Prioritätenliste
 - Neuer Diagnosebereich mit Netzleistung, Überschuss, Bezug, Reserve, Regelstatus und nächstem Verbraucher.
 - Versionsanzeige im Einstellungs-Popup.
 - Netzsensor bleibt direkt im Einstellungs-Popup änderbar.
+
+
+## v2.3.1
+
+- Feinschliff der Übersetzungen für Speicherstatus und manuelle Bedienung.
+- Frontend-Versionsanzeige und Cache-Version auf v2.3.1 aktualisiert.
