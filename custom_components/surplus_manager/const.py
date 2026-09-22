@@ -34,6 +34,7 @@ SERVICE_SET_ENABLED = "set_enabled"
 SERVICE_SET_MANUAL = "set_manual"
 SERVICE_SET_MODE = "set_mode"
 SERVICE_SET_RESERVE = "set_reserve"
+SERVICE_SET_GRID_SENSOR = "set_grid_sensor"
 
 MODE_AUTO = "auto"
 MODE_TEST = "test"
