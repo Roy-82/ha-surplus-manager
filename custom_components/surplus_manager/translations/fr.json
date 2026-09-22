@@ -1,0 +1,55 @@
+{
+  "title": "Gestionnaire de surplus",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurer le gestionnaire de surplus",
+        "description": "Le capteur de puissance réseau doit fournir la puissance au point de raccordement. Si « L’export est négatif » est activé, l’import est positif et l’export est négatif.",
+        "data": {
+          "name": "Nom",
+          "language": "Langue",
+          "grid_power_entity": "Capteur de puissance réseau",
+          "export_is_negative": "L’export réseau est négatif",
+          "reserve_w": "Réserve d’activation",
+          "max_import_w": "Import réseau autorisé",
+          "start_delay_s": "Délai d’activation",
+          "stop_delay_s": "Délai d’arrêt",
+          "settle_s": "Temps de stabilisation après commutation",
+          "scan_interval_s": "Intervalle de contrôle"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Paramètres du gestionnaire de surplus",
+        "description": "Modifier les paramètres de base du gestionnaire de surplus.",
+        "data": {
+          "name": "Nom",
+          "language": "Langue",
+          "grid_power_entity": "Capteur de puissance réseau",
+          "export_is_negative": "L’export réseau est négatif",
+          "reserve_w": "Réserve d’activation",
+          "max_import_w": "Import réseau autorisé",
+          "start_delay_s": "Délai d’activation",
+          "stop_delay_s": "Délai d’arrêt",
+          "settle_s": "Temps de stabilisation après commutation",
+          "scan_interval_s": "Intervalle de contrôle"
+        }
+      }
+    }
+  },
+  "selector": {
+    "language": {
+      "options": {
+        "auto": "Automatique (Home Assistant)",
+        "de": "Deutsch",
+        "en": "English",
+        "fr": "Français",
+        "es": "Español",
+        "nl": "Nederlands"
+      }
+    }
+  }
+}
