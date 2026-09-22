@@ -106,6 +106,14 @@ class SurplusManager:
         stored_mode = str(stored.get("mode", MODE_AUTO))
         self.mode = stored_mode if stored_mode in VALID_MODES else MODE_AUTO
 
+        # v2.2: PAUSE wird durch den Hauptschalter ersetzt. Ein alter PAUSE-
+        # Zustand wird sicher in "Regelung aus + AUTO" migriert.
+        migrated_pause = False
+        if self.mode == MODE_PAUSE:
+            self.mode = MODE_AUTO
+            self.enabled = False
+            migrated_pause = True
+
         self.battery_guards = [self._normalize_battery_guard(x) for x in stored.get("battery_guards", [])]
 
         raw = stored.get("consumers", [])
@@ -124,6 +132,8 @@ class SurplusManager:
             await self._save()
 
         self._normalize_stop_priorities()
+        if migrated_pause:
+            await self._save()
 
     async def async_start(self) -> None:
         self._unsub_timer = async_track_time_interval(
@@ -349,6 +359,18 @@ class SurplusManager:
         self.test_action = ""
         self._reset_timers()
         await self._save()
+        self._notify()
+
+    async def async_set_reserve(self, reserve_w: float) -> None:
+        reserve_w = max(0.0, float(reserve_w))
+        self.reserve_w = reserve_w
+
+        # Persistenz erfolgt über die Config-Entry-Optionen, damit der Wert auch
+        # nach Neustarts und HACS-Updates erhalten bleibt.
+        options = dict(self.entry.options)
+        options[CONF_RESERVE_W] = reserve_w
+        self.hass.config_entries.async_update_entry(self.entry, options=options)
+        self._reset_timers()
         self._notify()
 
     async def async_add_consumer(self, data: dict[str, Any]) -> dict[str, Any]:
