@@ -22,6 +22,7 @@ from .const import (
     SERVICE_SET_ENABLED,
     SERVICE_SET_MANUAL,
     SERVICE_SET_MODE,
+    SERVICE_SET_RESERVE,
     SERVICE_ADD_BATTERY_GUARD,
     SERVICE_UPDATE_BATTERY_GUARD,
     SERVICE_REMOVE_BATTERY_GUARD,
@@ -95,6 +96,10 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     async def set_mode(call: ServiceCall):
         manager = await _get_manager(call)
         await manager.async_set_mode(call.data["mode"])
+
+    async def set_reserve(call: ServiceCall):
+        manager = await _get_manager(call)
+        await manager.async_set_reserve(call.data["reserve_w"])
 
     async def add_battery_guard(call: ServiceCall):
         manager = await _get_manager(call)
@@ -224,6 +229,18 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                 {
                     SERVICE_ENTRY: cv.string,
                     vol.Required("mode"): vol.In(VALID_MODES),
+                }
+            ),
+        )
+
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_SET_RESERVE,
+            set_reserve,
+            schema=vol.Schema(
+                {
+                    SERVICE_ENTRY: cv.string,
+                    vol.Required("reserve_w"): vol.Coerce(float),
                 }
             ),
         )
