@@ -28,7 +28,11 @@ set_manual:
 
 set_mode:
   name: Betriebsmodus
-  description: Setzt AUTO, TEST oder PAUSE.
+  description: Setzt AUTO oder TEST.
+
+set_reserve:
+  name: Reserve setzen
+  description: Setzt die Einschaltreserve in Watt.
 
 add_battery_guard:
   name: Speicherwächter anlegen
