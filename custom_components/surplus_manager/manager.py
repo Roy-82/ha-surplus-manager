@@ -22,6 +22,7 @@ from .const import (
     CONF_STOP_DELAY_S,
     CONF_SETTLE_S,
     CONF_SCAN_INTERVAL_S,
+    CONF_LANGUAGE,
     DEFAULT_EXPORT_IS_NEGATIVE,
     DEFAULT_RESERVE_W,
     DEFAULT_MAX_IMPORT_W,
@@ -29,6 +30,7 @@ from .const import (
     DEFAULT_STOP_DELAY_S,
     DEFAULT_SETTLE_S,
     DEFAULT_SCAN_INTERVAL_S,
+    DEFAULT_LANGUAGE,
     STORAGE_VERSION,
     STORAGE_KEY_PREFIX,
     MODE_AUTO,
@@ -74,6 +76,7 @@ class SurplusManager:
         self.scan_interval_s = float(
             data.get(CONF_SCAN_INTERVAL_S, DEFAULT_SCAN_INTERVAL_S)
         )
+        self.language = str(data.get(CONF_LANGUAGE, DEFAULT_LANGUAGE) or DEFAULT_LANGUAGE)
 
         self.store = Store(
             hass,
@@ -968,6 +971,8 @@ class SurplusManager:
             "start_delay_s": self.start_delay_s,
             "stop_delay_s": self.stop_delay_s,
             "settle_s": self.settle_s,
+            "scan_interval_s": self.scan_interval_s,
+            "language": self.language,
             "enabled": self.enabled,
             "mode": self.mode,
             "test_action": self.test_action,
