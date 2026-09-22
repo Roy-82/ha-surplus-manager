@@ -39,3 +39,15 @@ title: Prioritätenliste
 - HACS-fähige Repository-Struktur.
 - GitHub-Validierungsworkflow.
 - Updates können künftig als GitHub-Releases veröffentlicht und über HACS installiert werden.
+
+
+## v2.2.0
+
+- Überschrift der Karte ist jetzt **Überschussmanager**.
+- PAUSE wurde aus der Bedienoberfläche entfernt; der Hauptschalter übernimmt Regelung an/aus.
+- AUTO und TEST liegen im neuen Einstellungs-Popup hinter dem Zahnrad.
+- Reserve kann direkt im Einstellungs-Popup in Watt geändert werden.
+- Netzsensor und Speicherwächter sind im Einstellungs-Popup gebündelt.
+- Große Speicherwarnung wurde durch einen kompakten Status-Chip ersetzt.
+- Prioritätsumschaltung steht jetzt unter der Verbraucherliste.
+- Eindeutigere Beschriftung: **Reihenfolge beim Einschalten** / **Reihenfolge beim Abschalten**.
