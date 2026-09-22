@@ -3,6 +3,8 @@
 PV-Überschussmanager für Home Assistant mit Prioritäten, manueller Übersteuerung,
 Testmodus, Speicherwächtern und eigener Dashboard-Karte.
 
+![Überschussmanager Dashboard](images/dashboard.png)
+
 ## Installation über HACS
 
 Nach Veröffentlichung dieses Repositorys:
@@ -51,3 +53,9 @@ title: Prioritätenliste
 - Große Speicherwarnung wurde durch einen kompakten Status-Chip ersetzt.
 - Prioritätsumschaltung steht jetzt unter der Verbraucherliste.
 - Eindeutigere Beschriftung: **Reihenfolge beim Einschalten** / **Reihenfolge beim Abschalten**.
+
+
+## v2.2.3
+
+- Netzsensor kann direkt im Einstellungs-Popup der Dashboard-Karte geändert werden.
+- Dashboard-Screenshot in der GitHub-Beschreibung ergänzt.
