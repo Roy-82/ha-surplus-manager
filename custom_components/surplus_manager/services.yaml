@@ -38,6 +38,10 @@ set_grid_sensor:
   name: Netzsensor setzen
   description: Ändert den Netzleistungssensor des Überschussmanagers.
 
+set_language:
+  name: Sprache setzen
+  description: Ändert die Sprache der Überschussmanager-Karte oder übernimmt automatisch die Home-Assistant-Sprache.
+
 add_battery_guard:
   name: Speicherwächter anlegen
   description: Fügt einen Speicher-Leistungssensor mit Abschaltschwelle hinzu.
