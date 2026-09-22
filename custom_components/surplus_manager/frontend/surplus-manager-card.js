@@ -1,3 +1,129 @@
+const SURPLUS_MANAGER_CARD_VERSION = "2.3.0";
+
+const SURPLUS_MANAGER_TRANSLATIONS = {
+  de: {},
+  en: {
+    "Überschussmanager":"Surplus Manager","Überschuss":"Surplus","Bezug":"Grid import","Aktive Last":"Active load",
+    "Speicher OK":"Battery OK","Kein Speicherwächter":"No battery guard","Netzsensor Fehler":"Grid sensor error",
+    "Einstellungen":"Settings","Schließen":"Close","Gesamte Regelung ein/aus":"Enable/disable control",
+    "Eine Position hoch":"Move up","Eine Position runter":"Move down","Verbraucher hinzufügen":"Add consumer",
+    "Markierten Verbraucher bearbeiten":"Edit selected consumer","Markierten Verbraucher entfernen":"Remove selected consumer",
+    "Noch keine Verbraucher.":"No consumers yet.","Mit + den ersten anlegen.":"Use + to add the first one.",
+    "Oben = zuerst einschalten":"Top = switch on first","Oben = zuerst abschalten":"Top = switch off first",
+    "Zeilen können am PC auch per Drag & Drop sortiert werden":"Rows can also be sorted by drag & drop on desktop",
+    "Reihenfolge beim Einschalten":"Switch-on order","Reihenfolge beim Abschalten":"Switch-off order",
+    "Betriebsart":"Operating mode","AUTO regelt normal. TEST simuliert nur und schaltet keine Geräte.":"AUTO controls normally. TEST only simulates and does not switch devices.",
+    "Reserve":"Reserve","Speichern":"Save","Netzsensor":"Grid sensor","Sensor für Netzbezug und Einspeisung":"Sensor for grid import and export",
+    "Positiv = Netzbezug · negativ = Einspeisung":"Positive = grid import · negative = grid export",
+    "Speicher":"Battery","Speicherwächter":"Battery guard","Noch kein Speicherwächter angelegt.":"No battery guard configured yet.",
+    "Leistungssensor des Speichers":"Battery power sensor","Abschaltschwelle":"Switch-off threshold","Vorzeichen bei Entladung":"Discharge sign",
+    "Entladung positiv":"Discharge positive","Entladung negativ":"Discharge negative","Speicherwächter aktiv":"Battery guard enabled",
+    "Überschreitet irgendein aktiver Speicher seine Grenze länger als die globale Ausschaltverzögerung, wird nach der AUS-Reihenfolge Last abgeworfen.":"If any enabled battery exceeds its threshold for longer than the global switch-off delay, loads are shed according to the OFF order.",
+    "Neu":"New","Verbraucher anlegen":"Add consumer","Verbraucher bearbeiten":"Edit consumer","Name":"Name","Schalt-Entität":"Switch entity",
+    "Leistungssensor":"Power sensor","(optional)":"(optional)","Leistungsbedarf":"Required power","Freigabe":"Automation",
+    "AUTO aktiv":"AUTO enabled","gesperrt":"blocked","Mindestlaufzeit":"Minimum runtime","Mindestpause":"Minimum off-time",
+    "Klima-Modus":"Climate mode","Heizen":"Heat","Kühlen":"Cool","Heizen/Kühlen":"Heat/Cool","Entfeuchten":"Dry","Nur Lüfter":"Fan only",
+    "Solltemperatur":"Target temperature","Abbrechen":"Cancel","Ziehen zum Sortieren":"Drag to sort","Für Überschussautomatik freigeben":"Enable for surplus automation",
+    "AUS":"OFF","EIN":"ON","GESPERRT":"BLOCKED","MANUELL EIN":"MANUAL ON","FEHLER":"ERROR",
+    "Manuell ausschalten und wieder AUTO aktivieren":"Switch off manually and return to AUTO","Gerät manuell einschalten":"Switch device on manually",
+    "Sprache":"Language","Automatisch (Home Assistant)":"Automatic (Home Assistant)","Übernehmen":"Apply",
+    "Automatisch übernimmt die Sprache von Home Assistant.":"Automatic uses the Home Assistant language.",
+    "Konfigurationsprüfung":"Configuration check","Diagnose":"Diagnostics","Netzleistung":"Grid power","Erlaubter Netzbezug":"Allowed grid import",
+    "Regelung":"Control","aktiv":"enabled","aus":"off","Nächster Verbraucher":"Next consumer","Kein geeigneter Verbraucher":"No suitable consumer",
+    "Verbraucher":"Consumers","nicht verfügbar":"unavailable","Speicher-Sensorfehler":"Battery sensor errors","Version":"Version","OK":"OK","Fehler":"Error",
+    "Bitte einen gültigen Sensor auswählen.":"Please select a valid sensor.","Bitte eine gültige Reserve in Watt eintragen.":"Please enter a valid reserve in watts.",
+    "Bitte Name, Leistungssensor und gültige Abschaltschwelle eintragen.":"Please enter a name, power sensor and valid switch-off threshold.",
+    "Bitte Name, gültige Entität und Leistungsbedarf ausfüllen.":"Please enter a name, valid entity and required power.",
+    "wirklich entfernen?":"really remove?","aktuell":"current","Soll":"Target","Entladung":"Discharge","Grenze":"Threshold"
+  },
+  fr: {
+    "Überschussmanager":"Gestionnaire de surplus","Überschuss":"Surplus","Bezug":"Import réseau","Aktive Last":"Charge active",
+    "Speicher OK":"Batterie OK","Kein Speicherwächter":"Aucune surveillance batterie","Netzsensor Fehler":"Erreur capteur réseau",
+    "Einstellungen":"Paramètres","Schließen":"Fermer","Gesamte Regelung ein/aus":"Activer/désactiver la régulation",
+    "Eine Position hoch":"Monter","Eine Position runter":"Descendre","Verbraucher hinzufügen":"Ajouter un consommateur",
+    "Markierten Verbraucher bearbeiten":"Modifier le consommateur sélectionné","Markierten Verbraucher entfernen":"Supprimer le consommateur sélectionné",
+    "Noch keine Verbraucher.":"Aucun consommateur.","Mit + den ersten anlegen.":"Utilisez + pour ajouter le premier.",
+    "Oben = zuerst einschalten":"En haut = activé en premier","Oben = zuerst abschalten":"En haut = arrêté en premier",
+    "Zeilen können am PC auch per Drag & Drop sortiert werden":"Les lignes peuvent aussi être triées par glisser-déposer sur ordinateur",
+    "Reihenfolge beim Einschalten":"Ordre d'activation","Reihenfolge beim Abschalten":"Ordre d'arrêt","Betriebsart":"Mode de fonctionnement",
+    "AUTO regelt normal. TEST simuliert nur und schaltet keine Geräte.":"AUTO régule normalement. TEST simule sans commuter les appareils.",
+    "Reserve":"Réserve","Speichern":"Enregistrer","Netzsensor":"Capteur réseau","Sensor für Netzbezug und Einspeisung":"Capteur pour import et export réseau",
+    "Positiv = Netzbezug · negativ = Einspeisung":"Positif = import · négatif = export","Speicher":"Batterie","Speicherwächter":"Surveillance batterie",
+    "Noch kein Speicherwächter angelegt.":"Aucune surveillance batterie configurée.","Leistungssensor des Speichers":"Capteur de puissance batterie",
+    "Abschaltschwelle":"Seuil d'arrêt","Vorzeichen bei Entladung":"Signe de décharge","Entladung positiv":"Décharge positive","Entladung negativ":"Décharge négative",
+    "Speicherwächter aktiv":"Surveillance batterie active","Neu":"Nouveau","Verbraucher anlegen":"Ajouter un consommateur","Verbraucher bearbeiten":"Modifier le consommateur",
+    "Name":"Nom","Schalt-Entität":"Entité de commutation","Leistungssensor":"Capteur de puissance","(optional)":"(facultatif)","Leistungsbedarf":"Puissance requise",
+    "Freigabe":"Autorisation","AUTO aktiv":"AUTO actif","gesperrt":"bloqué","Mindestlaufzeit":"Durée minimale","Mindestpause":"Pause minimale",
+    "Klima-Modus":"Mode climatisation","Heizen":"Chauffage","Kühlen":"Refroidissement","Heizen/Kühlen":"Chauffage/Refroidissement","Entfeuchten":"Déshumidification",
+    "Nur Lüfter":"Ventilation seule","Solltemperatur":"Température cible","Abbrechen":"Annuler","Ziehen zum Sortieren":"Glisser pour trier",
+    "Für Überschussautomatik freigeben":"Autoriser pour l'automatisation du surplus","AUS":"ARRÊT","EIN":"MARCHE","GESPERRT":"BLOQUÉ","MANUELL EIN":"MANUEL ON","FEHLER":"ERREUR",
+    "Sprache":"Langue","Automatisch (Home Assistant)":"Automatique (Home Assistant)","Übernehmen":"Appliquer","Automatisch übernimmt die Sprache von Home Assistant.":"Automatique utilise la langue de Home Assistant.",
+    "Konfigurationsprüfung":"Vérification de configuration","Diagnose":"Diagnostic","Netzleistung":"Puissance réseau","Erlaubter Netzbezug":"Import réseau autorisé",
+    "Regelung":"Régulation","aktiv":"active","aus":"arrêt","Nächster Verbraucher":"Prochain consommateur","Kein geeigneter Verbraucher":"Aucun consommateur approprié",
+    "Verbraucher":"Consommateurs","nicht verfügbar":"indisponibles","Speicher-Sensorfehler":"Erreurs capteur batterie","Version":"Version","OK":"OK","Fehler":"Erreur",
+    "Bitte einen gültigen Sensor auswählen.":"Veuillez sélectionner un capteur valide.","Bitte eine gültige Reserve in Watt eintragen.":"Veuillez saisir une réserve valide en watts.",
+    "Bitte Name, Leistungssensor und gültige Abschaltschwelle eintragen.":"Veuillez saisir un nom, un capteur de puissance et un seuil valide.",
+    "Bitte Name, gültige Entität und Leistungsbedarf ausfüllen.":"Veuillez saisir un nom, une entité valide et la puissance requise.",
+    "wirklich entfernen?":"vraiment supprimer ?","aktuell":"actuel","Soll":"Cible","Entladung":"Décharge","Grenze":"Seuil"
+  },
+  es: {
+    "Überschussmanager":"Gestor de excedentes","Überschuss":"Excedente","Bezug":"Importación","Aktive Last":"Carga activa",
+    "Speicher OK":"Batería OK","Kein Speicherwächter":"Sin vigilancia de batería","Netzsensor Fehler":"Error del sensor de red",
+    "Einstellungen":"Ajustes","Schließen":"Cerrar","Gesamte Regelung ein/aus":"Activar/desactivar control",
+    "Eine Position hoch":"Subir","Eine Position runter":"Bajar","Verbraucher hinzufügen":"Añadir consumidor",
+    "Markierten Verbraucher bearbeiten":"Editar consumidor seleccionado","Markierten Verbraucher entfernen":"Eliminar consumidor seleccionado",
+    "Noch keine Verbraucher.":"Aún no hay consumidores.","Mit + den ersten anlegen.":"Use + para añadir el primero.",
+    "Oben = zuerst einschalten":"Arriba = conectar primero","Oben = zuerst abschalten":"Arriba = desconectar primero",
+    "Zeilen können am PC auch per Drag & Drop sortiert werden":"Las filas también se pueden ordenar arrastrando en el PC",
+    "Reihenfolge beim Einschalten":"Orden de conexión","Reihenfolge beim Abschalten":"Orden de desconexión","Betriebsart":"Modo de funcionamiento",
+    "AUTO regelt normal. TEST simuliert nur und schaltet keine Geräte.":"AUTO regula normalmente. TEST solo simula y no conmuta dispositivos.",
+    "Reserve":"Reserva","Speichern":"Guardar","Netzsensor":"Sensor de red","Sensor für Netzbezug und Einspeisung":"Sensor para importación y exportación de red",
+    "Positiv = Netzbezug · negativ = Einspeisung":"Positivo = importación · negativo = exportación","Speicher":"Batería","Speicherwächter":"Vigilancia de batería",
+    "Noch kein Speicherwächter angelegt.":"Aún no hay vigilancia de batería.","Leistungssensor des Speichers":"Sensor de potencia de batería","Abschaltschwelle":"Umbral de desconexión",
+    "Vorzeichen bei Entladung":"Signo de descarga","Entladung positiv":"Descarga positiva","Entladung negativ":"Descarga negativa","Speicherwächter aktiv":"Vigilancia de batería activa",
+    "Neu":"Nuevo","Verbraucher anlegen":"Añadir consumidor","Verbraucher bearbeiten":"Editar consumidor","Name":"Nombre","Schalt-Entität":"Entidad de conmutación",
+    "Leistungssensor":"Sensor de potencia","(optional)":"(opcional)","Leistungsbedarf":"Potencia requerida","Freigabe":"Habilitación","AUTO aktiv":"AUTO activo","gesperrt":"bloqueado",
+    "Mindestlaufzeit":"Tiempo mínimo encendido","Mindestpause":"Tiempo mínimo apagado","Klima-Modus":"Modo climatización","Heizen":"Calefacción","Kühlen":"Refrigeración",
+    "Heizen/Kühlen":"Calor/Frío","Entfeuchten":"Deshumidificar","Nur Lüfter":"Solo ventilador","Solltemperatur":"Temperatura objetivo","Abbrechen":"Cancelar",
+    "Ziehen zum Sortieren":"Arrastrar para ordenar","Für Überschussautomatik freigeben":"Habilitar para automatización de excedentes","AUS":"OFF","EIN":"ON","GESPERRT":"BLOQUEADO",
+    "MANUELL EIN":"MANUAL ON","FEHLER":"ERROR","Sprache":"Idioma","Automatisch (Home Assistant)":"Automático (Home Assistant)","Übernehmen":"Aplicar",
+    "Automatisch übernimmt die Sprache von Home Assistant.":"Automático usa el idioma de Home Assistant.","Konfigurationsprüfung":"Comprobación de configuración","Diagnose":"Diagnóstico",
+    "Netzleistung":"Potencia de red","Erlaubter Netzbezug":"Importación permitida","Regelung":"Control","aktiv":"activo","aus":"apagado","Nächster Verbraucher":"Siguiente consumidor",
+    "Kein geeigneter Verbraucher":"Ningún consumidor adecuado","Verbraucher":"Consumidores","nicht verfügbar":"no disponibles","Speicher-Sensorfehler":"Errores de sensor de batería","Version":"Versión",
+    "OK":"OK","Fehler":"Error","Bitte einen gültigen Sensor auswählen.":"Seleccione un sensor válido.","Bitte eine gültige Reserve in Watt eintragen.":"Introduzca una reserva válida en vatios.",
+    "Bitte Name, Leistungssensor und gültige Abschaltschwelle eintragen.":"Introduzca nombre, sensor de potencia y un umbral válido.","Bitte Name, gültige Entität und Leistungsbedarf ausfüllen.":"Introduzca nombre, entidad válida y potencia requerida.",
+    "wirklich entfernen?":"¿eliminar realmente?","aktuell":"actual","Soll":"Objetivo","Entladung":"Descarga","Grenze":"Umbral"
+  },
+  nl: {
+    "Überschussmanager":"Overschotmanager","Überschuss":"Overschot","Bezug":"Netafname","Aktive Last":"Actieve belasting",
+    "Speicher OK":"Batterij OK","Kein Speicherwächter":"Geen batterijbewaking","Netzsensor Fehler":"Fout netsensor",
+    "Einstellungen":"Instellingen","Schließen":"Sluiten","Gesamte Regelung ein/aus":"Regeling aan/uit",
+    "Eine Position hoch":"Omhoog","Eine Position runter":"Omlaag","Verbraucher hinzufügen":"Verbruiker toevoegen",
+    "Markierten Verbraucher bearbeiten":"Geselecteerde verbruiker bewerken","Markierten Verbraucher entfernen":"Geselecteerde verbruiker verwijderen",
+    "Noch keine Verbraucher.":"Nog geen verbruikers.","Mit + den ersten anlegen.":"Gebruik + om de eerste toe te voegen.",
+    "Oben = zuerst einschalten":"Boven = eerst inschakelen","Oben = zuerst abschalten":"Boven = eerst uitschakelen",
+    "Zeilen können am PC auch per Drag & Drop sortiert werden":"Rijen kunnen op desktop ook via slepen worden gesorteerd",
+    "Reihenfolge beim Einschalten":"Inschakelvolgorde","Reihenfolge beim Abschalten":"Uitschakelvolgorde","Betriebsart":"Bedrijfsmodus",
+    "AUTO regelt normal. TEST simuliert nur und schaltet keine Geräte.":"AUTO regelt normaal. TEST simuleert alleen en schakelt geen apparaten.",
+    "Reserve":"Reserve","Speichern":"Opslaan","Netzsensor":"Netsensor","Sensor für Netzbezug und Einspeisung":"Sensor voor netafname en teruglevering",
+    "Positiv = Netzbezug · negativ = Einspeisung":"Positief = netafname · negatief = teruglevering","Speicher":"Batterij","Speicherwächter":"Batterijbewaking",
+    "Noch kein Speicherwächter angelegt.":"Nog geen batterijbewaking ingesteld.","Leistungssensor des Speichers":"Vermogenssensor batterij","Abschaltschwelle":"Uitschakeldrempel",
+    "Vorzeichen bei Entladung":"Teken bij ontladen","Entladung positiv":"Ontladen positief","Entladung negativ":"Ontladen negatief","Speicherwächter aktiv":"Batterijbewaking actief",
+    "Neu":"Nieuw","Verbraucher anlegen":"Verbruiker toevoegen","Verbraucher bearbeiten":"Verbruiker bewerken","Name":"Naam","Schalt-Entität":"Schakel-entiteit",
+    "Leistungssensor":"Vermogenssensor","(optional)":"(optioneel)","Leistungsbedarf":"Benodigd vermogen","Freigabe":"Vrijgave","AUTO aktiv":"AUTO actief","gesperrt":"geblokkeerd",
+    "Mindestlaufzeit":"Minimale looptijd","Mindestpause":"Minimale pauze","Klima-Modus":"Klimaatmodus","Heizen":"Verwarmen","Kühlen":"Koelen","Heizen/Kühlen":"Verwarmen/Koelen",
+    "Entfeuchten":"Ontvochtigen","Nur Lüfter":"Alleen ventilator","Solltemperatur":"Doeltemperatuur","Abbrechen":"Annuleren","Ziehen zum Sortieren":"Slepen om te sorteren",
+    "Für Überschussautomatik freigeben":"Vrijgeven voor overschotautomatisering","AUS":"UIT","EIN":"AAN","GESPERRT":"GEBLOKKEERD","MANUELL EIN":"HANDMATIG AAN","FEHLER":"FOUT",
+    "Sprache":"Taal","Automatisch (Home Assistant)":"Automatisch (Home Assistant)","Übernehmen":"Toepassen","Automatisch übernimmt die Sprache von Home Assistant.":"Automatisch gebruikt de Home Assistant-taal.",
+    "Konfigurationsprüfung":"Configuratiecontrole","Diagnose":"Diagnose","Netzleistung":"Netvermogen","Erlaubter Netzbezug":"Toegestane netafname","Regelung":"Regeling","aktiv":"actief",
+    "aus":"uit","Nächster Verbraucher":"Volgende verbruiker","Kein geeigneter Verbraucher":"Geen geschikte verbruiker","Verbraucher":"Verbruikers","nicht verfügbar":"niet beschikbaar",
+    "Speicher-Sensorfehler":"Fouten batterijsensor","Version":"Versie","OK":"OK","Fehler":"Fout","Bitte einen gültigen Sensor auswählen.":"Selecteer een geldige sensor.",
+    "Bitte eine gültige Reserve in Watt eintragen.":"Voer een geldige reserve in watt in.","Bitte Name, Leistungssensor und gültige Abschaltschwelle eintragen.":"Voer naam, vermogenssensor en geldige uitschakeldrempel in.",
+    "Bitte Name, gültige Entität und Leistungsbedarf ausfüllen.":"Voer naam, geldige entiteit en benodigd vermogen in.","wirklich entfernen?":"echt verwijderen?","aktuell":"actueel",
+    "Soll":"Doel","Entladung":"Ontlading","Grenze":"Drempel"
+  }
+};
+
 class SurplusManagerCard extends HTMLElement {
   constructor() {
     super();
@@ -55,11 +181,103 @@ class SurplusManagerCard extends HTMLElement {
       .replaceAll("'", "&#039;");
   }
 
+  _effectiveLanguage() {
+    const configured = String(this._state()?.attributes?.language || "auto").toLowerCase();
+    if (configured !== "auto" && SURPLUS_MANAGER_TRANSLATIONS[configured]) return configured;
+    const haLanguage = String(this._hass?.locale?.language || this._hass?.language || "en").toLowerCase().split("-")[0];
+    return SURPLUS_MANAGER_TRANSLATIONS[haLanguage] ? haLanguage : "en";
+  }
+
+  _tr(text) {
+    const source = String(text ?? "");
+    const lang = this._effectiveLanguage();
+    return SURPLUS_MANAGER_TRANSLATIONS[lang]?.[source] || source;
+  }
+
+  _languageOptions(selected) {
+    const options = [
+      ["auto", this._tr("Automatisch (Home Assistant)")],
+      ["de", "Deutsch"], ["en", "English"], ["fr", "Français"], ["es", "Español"], ["nl", "Nederlands"],
+    ];
+    return options.map(([value, label]) => `<option value="${value}" ${selected === value ? "selected" : ""}>${label}</option>`).join("");
+  }
+
+  _translateReason(reason) {
+    const r = String(reason || "");
+    const exact = {
+      "Fehler – Details über !":"Error – details via !",
+      "Entität nicht verfügbar":"Entity unavailable",
+      "Manuell eingeschaltet – AUTO gesperrt":"Manually switched on – AUTO blocked",
+      "Manueller Modus – extern ausgeschaltet":"Manual mode – switched off externally",
+      "Für AUTO gesperrt":"Blocked for AUTO",
+      "Netzsensor nicht verfügbar – keine Automatik":"Grid sensor unavailable – no automation",
+      "Regelung ausgeschaltet":"Control disabled",
+      "Pause – keine automatische Schaltung":"Pause – no automatic switching",
+      "Testmodus – beobachtet nur":"Test mode – monitoring only",
+      "Mindestlaufzeit":"Minimum runtime",
+      "Läuft · wartet ggf. auf AUS-Priorität":"Running · waiting for OFF priority if needed",
+      "Automatisch eingeschaltet":"Automatically switched on",
+      "Extern eingeschaltet – Automatik schaltet es nicht ab":"Switched on externally – automation will not switch it off",
+      "Mindestpause":"Minimum off-time",
+      "Einschaltverzögerung":"Switch-on delay",
+      "Beruhigungszeit nach Schaltung":"Settling time after switching",
+      "Bereit zum Einschalten":"Ready to switch on"
+    };
+    if (this._effectiveLanguage() === "de") return r;
+    let en = exact[r] || r
+      .replace(/^Wartet auf höhere Priorität: /, "Waiting for higher priority: ")
+      .replace(/^Höhere Priorität wartet: /, "Higher priority waiting: ")
+      .replace(/^Zu wenig Überschuss · benötigt /, "Not enough surplus · requires ")
+      .replace(/^Testmodus · /, "Test mode · ");
+    const maps = {
+      fr: [["Error – details via !","Erreur – détails via !"],["Entity unavailable","Entité indisponible"],["Manually switched on – AUTO blocked","Activé manuellement – AUTO bloqué"],["Manual mode – switched off externally","Mode manuel – désactivé en externe"],["Blocked for AUTO","Bloqué pour AUTO"],["Grid sensor unavailable – no automation","Capteur réseau indisponible – pas d'automatisation"],["Control disabled","Régulation désactivée"],["Test mode – monitoring only","Mode test – observation uniquement"],["Minimum runtime","Durée minimale"],["Automatically switched on","Activé automatiquement"],["Minimum off-time","Pause minimale"],["Switch-on delay","Délai d'activation"],["Settling time after switching","Temps de stabilisation"],["Ready to switch on","Prêt à activer"],["Waiting for higher priority: ","Attend une priorité supérieure : "],["Higher priority waiting: ","Priorité supérieure en attente : "],["Not enough surplus · requires ","Surplus insuffisant · nécessite "],["Test mode · ","Mode test · "]],
+      es: [["Error – details via !","Error – detalles en !"],["Entity unavailable","Entidad no disponible"],["Manually switched on – AUTO blocked","Encendido manualmente – AUTO bloqueado"],["Manual mode – switched off externally","Modo manual – apagado externamente"],["Blocked for AUTO","Bloqueado para AUTO"],["Grid sensor unavailable – no automation","Sensor de red no disponible – sin automatización"],["Control disabled","Control desactivado"],["Test mode – monitoring only","Modo prueba – solo observación"],["Minimum runtime","Tiempo mínimo encendido"],["Automatically switched on","Encendido automáticamente"],["Minimum off-time","Tiempo mínimo apagado"],["Switch-on delay","Retardo de conexión"],["Settling time after switching","Tiempo de estabilización"],["Ready to switch on","Listo para conectar"],["Waiting for higher priority: ","Esperando prioridad superior: "],["Higher priority waiting: ","Prioridad superior en espera: "],["Not enough surplus · requires ","Excedente insuficiente · necesita "],["Test mode · ","Modo prueba · "]],
+      nl: [["Error – details via !","Fout – details via !"],["Entity unavailable","Entiteit niet beschikbaar"],["Manually switched on – AUTO blocked","Handmatig ingeschakeld – AUTO geblokkeerd"],["Manual mode – switched off externally","Handmatige modus – extern uitgeschakeld"],["Blocked for AUTO","Geblokkeerd voor AUTO"],["Grid sensor unavailable – no automation","Netsensor niet beschikbaar – geen automatisering"],["Control disabled","Regeling uitgeschakeld"],["Test mode – monitoring only","Testmodus – alleen observeren"],["Minimum runtime","Minimale looptijd"],["Automatically switched on","Automatisch ingeschakeld"],["Minimum off-time","Minimale pauze"],["Switch-on delay","Inschakelvertraging"],["Settling time after switching","Stabilisatietijd"],["Ready to switch on","Klaar om in te schakelen"],["Waiting for higher priority: ","Wacht op hogere prioriteit: "],["Higher priority waiting: ","Hogere prioriteit wacht: "],["Not enough surplus · requires ","Te weinig overschot · nodig "],["Test mode · ","Testmodus · "]]
+    };
+    for (const [from,to] of (maps[this._effectiveLanguage()] || [])) en = en.replace(from,to);
+    return en;
+  }
+
+  _applyTranslations() {
+    const lang = this._effectiveLanguage();
+    if (lang === "de" || !this.shadowRoot) return;
+    const walker = document.createTreeWalker(this.shadowRoot, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (const node of nodes) {
+      const raw = node.nodeValue || "";
+      const trimmed = raw.trim();
+      if (!trimmed) continue;
+      let translated = this._tr(trimmed);
+      translated = translated
+        .replace(/^Überschuss(?=\s)/, this._tr("Überschuss"))
+        .replace(/^Bezug(?=\s)/, this._tr("Bezug"))
+        .replace(/^Aktive Last(?=\s)/, this._tr("Aktive Last"))
+        .replace(/^Speicherentladung(?=\s)/, this._tr("Speicher") + " ")
+        .replace(/^Speicher (?=\d)/, this._tr("Speicher") + " ")
+        .replace(/^Netzsensor OK$/, this._tr("Netzsensor") + " " + this._tr("OK"))
+        .replace(/^Netzsensor Fehler$/, this._tr("Netzsensor") + " " + this._tr("Fehler"))
+        .replace(/^aktuell(?=\s)/, this._tr("aktuell"))
+        .replace(/^Soll(?=\s)/, this._tr("Soll"))
+        .replace(/^Entladung(?=\s)/, this._tr("Entladung"))
+        .replace(/ · Grenze /, " · " + this._tr("Grenze") + " ");
+      if (translated !== trimmed) node.nodeValue = raw.replace(trimmed, translated);
+    }
+    for (const el of this.shadowRoot.querySelectorAll("[title],[aria-label],[placeholder]")) {
+      for (const attr of ["title","aria-label","placeholder"]) {
+        if (el.hasAttribute(attr)) el.setAttribute(attr, this._tr(el.getAttribute(attr)));
+      }
+    }
+  }
+
   _fmtW(v) {
     if (v === null || v === undefined || Number.isNaN(Number(v))) return "–";
     const n = Number(v);
-    if (Math.abs(n) >= 1000) return `${(n / 1000).toFixed(2)} kW`;
-    return `${Math.round(n)} W`;
+    const locale = {de:"de-DE",en:"en-GB",fr:"fr-FR",es:"es-ES",nl:"nl-NL"}[this._effectiveLanguage()] || "en-GB";
+    if (Math.abs(n) >= 1000) {
+      return `${new Intl.NumberFormat(locale, {maximumFractionDigits: 2, minimumFractionDigits: 0}).format(n / 1000)} kW`;
+    }
+    return `${new Intl.NumberFormat(locale, {maximumFractionDigits: 0}).format(Math.round(n))} W`;
   }
 
   _fmtSec(v) {
@@ -106,6 +324,10 @@ class SurplusManagerCard extends HTMLElement {
     const mode = a.mode || "auto";
     const batteryGuards = a.battery_guards || [];
     const triggeredBatteries = batteryGuards.filter((g) => g.triggered);
+    const unavailableConsumers = consumers.filter((c) => c.available === false).length;
+    const invalidBatterySensors = batteryGuards.filter((g) => g.enabled && (g.discharge_w === null || g.discharge_w === undefined)).length;
+    const nextConsumer = consumers.find((c) => c.enabled && !c.manual_on && !c.is_on) || null;
+    const configuredLanguage = String(a.language || "auto");
     const batteryStatusText = triggeredBatteries.length
       ? `Speicherentladung ${triggeredBatteries.map((g) => g.name).join(", ")}`
       : batteryGuards.length ? "Speicher OK" : "Kein Speicherwächter";
@@ -207,6 +429,15 @@ class SurplusManagerCard extends HTMLElement {
           </div>
 
           <div class="settingsSection">
+            <div class="sectionTitle">Sprache</div>
+            <div class="languageRow">
+              <select id="settingsLanguage">${this._languageOptions(configuredLanguage)}</select>
+              <button type="button" id="saveLanguage" class="primary compactPrimary">Übernehmen</button>
+            </div>
+            <div class="hint">Automatisch übernimmt die Sprache von Home Assistant.</div>
+          </div>
+
+          <div class="settingsSection">
             <div class="sectionTitle">Reserve</div>
             <div class="reserveRow">
               <div class="unitInput"><input id="settingsReserve" type="number" min="0" step="10" value="${this._esc(a.reserve_w ?? 150)}"><span>W</span></div>
@@ -237,6 +468,32 @@ class SurplusManagerCard extends HTMLElement {
             </div>
             <ha-icon icon="mdi:chevron-right"></ha-icon>
           </button>
+
+          <div class="settingsSection configCheck">
+            <div class="sectionTitle">Konfigurationsprüfung</div>
+            <div class="checkGrid">
+              <div class="${gridValid ? "checkOk" : "checkBad"}"><ha-icon icon="${gridValid ? "mdi:check-circle" : "mdi:alert-circle"}"></ha-icon> Netzsensor ${gridValid ? "OK" : "Fehler"}</div>
+              <div class="${consumers.length ? "checkOk" : "checkBad"}"><ha-icon icon="${consumers.length ? "mdi:check-circle" : "mdi:alert-circle"}"></ha-icon> Verbraucher ${consumers.length}</div>
+              <div class="${unavailableConsumers ? "checkWarn" : "checkOk"}"><ha-icon icon="${unavailableConsumers ? "mdi:alert" : "mdi:check-circle"}"></ha-icon> ${unavailableConsumers} nicht verfügbar</div>
+              <div class="${invalidBatterySensors ? "checkWarn" : "checkOk"}"><ha-icon icon="${invalidBatterySensors ? "mdi:alert" : "mdi:check-circle"}"></ha-icon> Speicher-Sensorfehler ${invalidBatterySensors}</div>
+            </div>
+          </div>
+
+          <details class="settingsSection diagnostics">
+            <summary><span class="sectionTitle">Diagnose</span></summary>
+            <div class="diagGrid">
+              <span>Netzleistung</span><b>${this._fmtW(a.grid_power_w)}</b>
+              <span>Überschuss</span><b>${this._fmtW(a.export_w)}</b>
+              <span>Bezug</span><b>${this._fmtW(a.import_w)}</b>
+              <span>Reserve</span><b>${this._fmtW(a.reserve_w)}</b>
+              <span>Erlaubter Netzbezug</span><b>${this._fmtW(a.max_import_w)}</b>
+              <span>Regelung</span><b>${enabled ? "aktiv" : "aus"} · ${String(mode).toUpperCase()}</b>
+              <span>Nächster Verbraucher</span><b>${nextConsumer ? this._esc(nextConsumer.name) : "Kein geeigneter Verbraucher"}</b>
+            </div>
+            ${nextConsumer ? `<div class="diagReason">${this._esc(this._translateReason(nextConsumer.reason || ""))}</div>` : ""}
+          </details>
+
+          <div class="versionLine">Überschussmanager v${SURPLUS_MANAGER_CARD_VERSION}</div>
         </form>
       </dialog>
 
@@ -342,6 +599,7 @@ class SurplusManagerCard extends HTMLElement {
       </dialog>
     `;
 
+    this._applyTranslations();
     this._wire(consumers);
   }
 
@@ -388,8 +646,8 @@ class SurplusManagerCard extends HTMLElement {
           <div class="meta">
             ${powerText} · EIN ${this._esc(c.start_priority ?? c.priority)} / AUS ${this._esc(c.stop_priority)}
           </div>
-          <div class="reason" title="${this._esc(c.reason || "")}">
-            ${this._esc(c.reason || "")} ${countdown}
+          <div class="reason" title="${this._esc(this._translateReason(c.reason || ""))}">
+            ${this._esc(this._translateReason(c.reason || ""))} ${countdown}
           </div>
         </div>
         <button class="status manualToggle ${stateClass}"
@@ -693,6 +951,25 @@ class SurplusManagerCard extends HTMLElement {
           .dragHandle { display:none; }
           .modeBar button, .orderTabs button { font-size:11px; }
         }
+        .languageRow { display:flex; gap:10px; align-items:center; }
+        .languageRow select { flex:1; min-width:0; }
+        .configCheck .checkGrid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+        .checkGrid > div { display:flex; align-items:center; gap:6px; padding:7px 8px; border-radius:9px; background:var(--secondary-background-color); font-size:12px; }
+        .checkGrid ha-icon { --mdc-icon-size:16px; }
+        .checkOk { color:var(--success-color, #43a047); }
+        .checkWarn { color:var(--warning-color, #fb8c00); }
+        .checkBad { color:var(--error-color); }
+        details.diagnostics summary { cursor:pointer; list-style:none; }
+        details.diagnostics summary::-webkit-details-marker { display:none; }
+        .diagGrid { display:grid; grid-template-columns:1fr auto; gap:7px 14px; margin-top:10px; font-size:12px; }
+        .diagGrid span { color:var(--secondary-text-color); }
+        .diagGrid b { text-align:right; }
+        .diagReason { margin-top:9px; padding:8px; border-radius:8px; background:var(--secondary-background-color); font-size:12px; }
+        .versionLine { text-align:center; color:var(--secondary-text-color); font-size:11px; padding:3px 0 1px; }
+        @media (max-width: 600px) {
+          .configCheck .checkGrid { grid-template-columns:1fr; }
+          .languageRow { align-items:stretch; flex-direction:column; }
+        }
       </style>
     `;
   }
@@ -706,7 +983,15 @@ class SurplusManagerCard extends HTMLElement {
     q("#settingsButton")?.addEventListener("click", () => q("#settingsEditor")?.showModal());
     q("#closeSettingsEditor")?.addEventListener("click", () => q("#settingsEditor")?.close());
     q("#settingsEditor")?.addEventListener("close", () => this._queueRender());
-    const gridPicker = q("#settingsGridSensor");
+    q("#saveLanguage")?.addEventListener("click", async () => {
+      const language = String(q("#settingsLanguage")?.value || "auto");
+      await this._hass.callService("surplus_manager", "set_language", {
+        config_entry_id: entryId,
+        language,
+      });
+      q("#settingsEditor")?.close();
+    });
+        const gridPicker = q("#settingsGridSensor");
     if (gridPicker) {
       gridPicker.hass = this._hass;
       gridPicker.value = state?.attributes?.grid_power_entity || "";
@@ -716,7 +1001,7 @@ class SurplusManagerCard extends HTMLElement {
     q("#saveGridSensor")?.addEventListener("click", async () => {
       const entityId = String(gridPicker?.value || "").trim();
       if (!entityId || !entityId.startsWith("sensor.")) {
-        alert("Bitte einen gültigen Sensor auswählen.");
+        alert(this._tr("Bitte einen gültigen Sensor auswählen."));
         return;
       }
       await this._hass.callService("surplus_manager", "set_grid_sensor", {
@@ -729,7 +1014,7 @@ class SurplusManagerCard extends HTMLElement {
     q("#saveReserve")?.addEventListener("click", async () => {
       const reserve = Number(q("#settingsReserve")?.value);
       if (!Number.isFinite(reserve) || reserve < 0) {
-        alert("Bitte eine gültige Reserve in Watt eintragen.");
+        alert(this._tr("Bitte eine gültige Reserve in Watt eintragen."));
         return;
       }
       await this._hass.callService("surplus_manager", "set_reserve", {
@@ -912,7 +1197,7 @@ class SurplusManagerCard extends HTMLElement {
     const entityId = q("#bEntity").value.trim();
     const threshold = Number(q("#bThreshold").value);
     if (!name || !entityId || !Number.isFinite(threshold) || threshold < 0) {
-      alert("Bitte Name, Leistungssensor und gültige Abschaltschwelle eintragen.");
+      alert(this._tr("Bitte Name, Leistungssensor und gültige Abschaltschwelle eintragen."));
       return;
     }
     const data = {
@@ -982,7 +1267,7 @@ class SurplusManagerCard extends HTMLElement {
     const power = Number(q("#fPower").value);
 
     if (!name || !entityId || !Number.isFinite(power) || power < 0) {
-      alert("Bitte Name, gültige Entität und Leistungsbedarf ausfüllen.");
+      alert(this._tr("Bitte Name, gültige Entität und Leistungsbedarf ausfüllen."));
       return;
     }
     if (!this._hass.states[entityId]) {
