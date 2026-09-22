@@ -24,10 +24,12 @@ from .const import (
     SERVICE_SET_MODE,
     SERVICE_SET_RESERVE,
     SERVICE_SET_GRID_SENSOR,
+    SERVICE_SET_LANGUAGE,
     SERVICE_ADD_BATTERY_GUARD,
     SERVICE_UPDATE_BATTERY_GUARD,
     SERVICE_REMOVE_BATTERY_GUARD,
     VALID_MODES,
+    SUPPORTED_LANGUAGES,
 )
 from .manager import SurplusManager
 
@@ -107,6 +109,13 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         entity_id = call.data["entity_id"]
         options = dict(manager.entry.options)
         options["grid_power_entity"] = entity_id
+        hass.config_entries.async_update_entry(manager.entry, options=options)
+
+    async def set_language(call: ServiceCall):
+        manager = await _get_manager(call)
+        language = call.data["language"]
+        options = dict(manager.entry.options)
+        options["language"] = language
         hass.config_entries.async_update_entry(manager.entry, options=options)
 
     async def add_battery_guard(call: ServiceCall):
@@ -261,6 +270,18 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                 {
                     SERVICE_ENTRY: cv.string,
                     vol.Required("entity_id"): cv.entity_id,
+                }
+            ),
+        )
+
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_SET_LANGUAGE,
+            set_language,
+            schema=vol.Schema(
+                {
+                    SERVICE_ENTRY: cv.string,
+                    vol.Required("language"): vol.In(SUPPORTED_LANGUAGES),
                 }
             ),
         )
