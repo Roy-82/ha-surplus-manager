@@ -23,7 +23,7 @@ Ab v2.1 wird die Karte direkt mit der Integration ausgeliefert. `/config/www` is
 
 Unter Einstellungen → Dashboards → Ressourcen einmalig eintragen:
 
-- URL: `/surplus_manager/surplus-manager-card.js?v=2.3.2`
+- URL: `/surplus_manager/surplus-manager-card.js?v=2.3.3`
 - Typ: JavaScript-Modul
 
 Danach werden Backend und Karte gemeinsam über HACS aktualisiert.
@@ -89,3 +89,9 @@ title: Prioritätenliste
 
 - Anzeigeoption im Zahnrad ergänzt: Hilfetexte können ein- oder ausgeblendet werden.
 - Cache-/Frontend-Version auf v2.3.2 aktualisiert.
+
+
+## v2.3.3
+
+- Fix: Das Optionen-/Konfigurationsfenster öffnet unter Home Assistant 2025.12+ wieder korrekt.
+- Ursache war die seit Home Assistant 2025.12 nicht mehr erlaubte direkte Zuweisung von `self.config_entry` im OptionsFlow.
