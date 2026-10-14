@@ -32,6 +32,7 @@ from .const import (
     SUPPORTED_LANGUAGES,
 )
 from .manager import SurplusManager
+from .conditions import normalize_conditions
 
 SERVICE_ENTRY = vol.Required("config_entry_id")
 SERVICE_CONSUMER_ID = vol.Required("consumer_id")
@@ -137,6 +138,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 
     if not hass.services.has_service(DOMAIN, SERVICE_ADD_CONSUMER):
         common_consumer_fields = {
+            vol.Optional("conditions"): normalize_conditions,
             vol.Required("name"): cv.string,
             vol.Required("entity_id"): cv.entity_id,
             vol.Required("power_w"): vol.Coerce(float),
@@ -156,6 +158,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         )
 
         update_fields = {
+            vol.Optional("conditions"): normalize_conditions,
             vol.Optional("name"): cv.string,
             vol.Optional("entity_id"): cv.entity_id,
             vol.Optional("power_w"): vol.Coerce(float),
