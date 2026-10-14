@@ -134,13 +134,10 @@ class SurplusManagerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     def async_get_options_flow(config_entry):
-        return SurplusManagerOptionsFlow(config_entry)
+        return SurplusManagerOptionsFlow()
 
 
 class SurplusManagerOptionsFlow(config_entries.OptionsFlow):
-    def __init__(self, config_entry):
-        self.config_entry = config_entry
-
     async def async_step_init(self, user_input=None):
         current = dict(self.config_entry.data)
         current.update(self.config_entry.options)
