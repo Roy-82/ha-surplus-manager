@@ -1,8 +1,24 @@
-const SURPLUS_MANAGER_CARD_VERSION = "2.3.2";
+const SURPLUS_MANAGER_CARD_VERSION = "2.4.0";
 
 const SURPLUS_MANAGER_TRANSLATIONS = {
   de: {},
   en: {
+    "Startbedingungen":"Start conditions",
+    "Regelmodus":"Control mode",
+    "Überschussbetrieb":"Surplus control",
+    "Bedingungsbetrieb":"Condition control",
+    "SoC-Sensor (optional)":"SoC sensor (optional)",
+    "PV-Sensor (optional)":"PV sensor (optional)",
+    "SoC EIN (%)":"SoC ON (%)",
+    "SoC AUS (%)":"SoC OFF (%)",
+    "PV EIN (W)":"PV ON (W)",
+    "PV AUS (W)":"PV OFF (W)",
+    "Zeitfenster von":"Time window from",
+    "Zeitfenster bis":"Time window until",
+    "Akku-Nutzung erlauben":"Allow battery use",
+    "Alle aktivierten Bedingungen gelten gemeinsam. Leere Sensorfelder deaktivieren die jeweilige Bedingung.":"All enabled conditions must be met. Empty sensor fields disable that condition.",
+    "Bedingungsbetrieb ohne Akku-Nutzung benötigt aktive Speicherwächter für alle Speicher. Verfügbare Ladeleistung wird berücksichtigt. Bestehende Speichergrenzen gelten immer. Zeitfenster: lokale Home-Assistant-Zeit, auch über Mitternacht.":"Condition control without battery use requires enabled battery guards for all batteries. Available charging power is considered. Existing battery limits always apply. Time windows use local Home Assistant time and may cross midnight.",
+    "Mit Akku-Nutzung wird einzeln zugeschaltet und der Netzbezug anschließend überwacht. Kurzzeitiger Netzbezug ist möglich. Ausschaltverzögerung und Mindestlaufzeit gelten weiterhin.":"With battery use, loads start one at a time and grid import is monitored afterwards. Temporary grid import is possible. Stop delay and minimum runtime still apply.",
     "Überschussmanager":"Surplus Manager","Überschuss":"Surplus","Bezug":"Grid import","Aktive Last":"Active load",
     "Speicher OK":"Battery OK","Speicherentladung":"Battery discharge","Kein Speicherwächter":"No battery guard","Netzsensor Fehler":"Grid sensor error",
     "Einstellungen":"Settings","Anzeige":"Display","Hilfetexte anzeigen":"Show help text","Schließen":"Close","Gesamte Regelung ein/aus":"Enable/disable control",
@@ -37,6 +53,22 @@ const SURPLUS_MANAGER_TRANSLATIONS = {
     "wirklich entfernen?":"really remove?","aktuell":"current","Soll":"Target","Entladung":"Discharge","Grenze":"Threshold"
   },
   fr: {
+    "Startbedingungen":"Conditions de démarrage",
+    "Regelmodus":"Mode de régulation",
+    "Überschussbetrieb":"Régulation du surplus",
+    "Bedingungsbetrieb":"Régulation par conditions",
+    "SoC-Sensor (optional)":"Capteur SoC (facultatif)",
+    "PV-Sensor (optional)":"Capteur PV (facultatif)",
+    "SoC EIN (%)":"SoC MARCHE (%)",
+    "SoC AUS (%)":"SoC ARRÊT (%)",
+    "PV EIN (W)":"PV MARCHE (W)",
+    "PV AUS (W)":"PV ARRÊT (W)",
+    "Zeitfenster von":"Plage horaire de",
+    "Zeitfenster bis":"Plage horaire à",
+    "Akku-Nutzung erlauben":"Autoriser la batterie",
+    "Alle aktivierten Bedingungen gelten gemeinsam. Leere Sensorfelder deaktivieren die jeweilige Bedingung.":"Toutes les conditions activées doivent être remplies. Un champ de capteur vide désactive la condition.",
+    "Bedingungsbetrieb ohne Akku-Nutzung benötigt aktive Speicherwächter für alle Speicher. Verfügbare Ladeleistung wird berücksichtigt. Bestehende Speichergrenzen gelten immer. Zeitfenster: lokale Home-Assistant-Zeit, auch über Mitternacht.":"Le contrôle sans utilisation de batterie nécessite une surveillance active de toutes les batteries. La puissance de charge disponible est prise en compte. Les limites existantes restent actives. Les horaires utilisent l’heure locale de Home Assistant et peuvent traverser minuit.",
+    "Mit Akku-Nutzung wird einzeln zugeschaltet und der Netzbezug anschließend überwacht. Kurzzeitiger Netzbezug ist möglich. Ausschaltverzögerung und Mindestlaufzeit gelten weiterhin.":"Avec utilisation de batterie, les charges démarrent une par une puis l’import réseau est surveillé. Un import temporaire est possible. Le délai d’arrêt et la durée minimale restent applicables.",
     "Überschussmanager":"Gestionnaire de surplus","Überschuss":"Surplus","Bezug":"Import réseau","Aktive Last":"Charge active",
     "Speicher OK":"Batterie OK","Speicherentladung":"Décharge batterie","Kein Speicherwächter":"Aucune surveillance batterie","Netzsensor Fehler":"Erreur capteur réseau",
     "Einstellungen":"Paramètres","Anzeige":"Affichage","Hilfetexte anzeigen":"Afficher les textes d’aide","Manuell ausschalten und wieder AUTO aktivieren":"Désactiver manuellement et revenir à AUTO","Gerät manuell einschalten":"Activer l’appareil manuellement","Schließen":"Fermer","Gesamte Regelung ein/aus":"Activer/désactiver la régulation",
@@ -67,6 +99,22 @@ const SURPLUS_MANAGER_TRANSLATIONS = {
     "wirklich entfernen?":"vraiment supprimer ?","aktuell":"actuel","Soll":"Cible","Entladung":"Décharge","Grenze":"Seuil"
   },
   es: {
+    "Startbedingungen":"Condiciones de inicio",
+    "Regelmodus":"Modo de control",
+    "Überschussbetrieb":"Control de excedentes",
+    "Bedingungsbetrieb":"Control por condiciones",
+    "SoC-Sensor (optional)":"Sensor SoC (opcional)",
+    "PV-Sensor (optional)":"Sensor FV (opcional)",
+    "SoC EIN (%)":"SoC ENCENDIDO (%)",
+    "SoC AUS (%)":"SoC APAGADO (%)",
+    "PV EIN (W)":"FV ENCENDIDO (W)",
+    "PV AUS (W)":"FV APAGADO (W)",
+    "Zeitfenster von":"Horario desde",
+    "Zeitfenster bis":"Horario hasta",
+    "Akku-Nutzung erlauben":"Permitir uso de batería",
+    "Alle aktivierten Bedingungen gelten gemeinsam. Leere Sensorfelder deaktivieren die jeweilige Bedingung.":"Deben cumplirse todas las condiciones activadas. Un campo de sensor vacío desactiva esa condición.",
+    "Bedingungsbetrieb ohne Akku-Nutzung benötigt aktive Speicherwächter für alle Speicher. Verfügbare Ladeleistung wird berücksichtigt. Bestehende Speichergrenzen gelten immer. Zeitfenster: lokale Home-Assistant-Zeit, auch über Mitternacht.":"El control sin usar batería requiere supervisores activos para todas las baterías. Se considera la potencia de carga disponible. Los límites existentes siguen vigentes. Los horarios usan la hora local de Home Assistant y pueden cruzar medianoche.",
+    "Mit Akku-Nutzung wird einzeln zugeschaltet und der Netzbezug anschließend überwacht. Kurzzeitiger Netzbezug ist möglich. Ausschaltverzögerung und Mindestlaufzeit gelten weiterhin.":"Con uso de batería, las cargas arrancan de una en una y después se vigila la importación de red. Puede haber importación temporal. Siguen vigentes el retardo de apagado y el tiempo mínimo.",
     "Überschussmanager":"Gestor de excedentes","Überschuss":"Excedente","Bezug":"Importación","Aktive Last":"Carga activa",
     "Speicher OK":"Batería OK","Speicherentladung":"Descarga de batería","Kein Speicherwächter":"Sin vigilancia de batería","Netzsensor Fehler":"Error del sensor de red",
     "Einstellungen":"Ajustes","Anzeige":"Visualización","Hilfetexte anzeigen":"Mostrar textos de ayuda","Manuell ausschalten und wieder AUTO aktivieren":"Apagar manualmente y volver a AUTO","Gerät manuell einschalten":"Encender el dispositivo manualmente","Schließen":"Cerrar","Gesamte Regelung ein/aus":"Activar/desactivar control",
@@ -95,6 +143,22 @@ const SURPLUS_MANAGER_TRANSLATIONS = {
     "wirklich entfernen?":"¿eliminar realmente?","aktuell":"actual","Soll":"Objetivo","Entladung":"Descarga","Grenze":"Umbral"
   },
   nl: {
+    "Startbedingungen":"Startvoorwaarden",
+    "Regelmodus":"Regelmodus",
+    "Überschussbetrieb":"Overschotregeling",
+    "Bedingungsbetrieb":"Voorwaardenregeling",
+    "SoC-Sensor (optional)":"SoC-sensor (optioneel)",
+    "PV-Sensor (optional)":"PV-sensor (optioneel)",
+    "SoC EIN (%)":"SoC AAN (%)",
+    "SoC AUS (%)":"SoC UIT (%)",
+    "PV EIN (W)":"PV AAN (W)",
+    "PV AUS (W)":"PV UIT (W)",
+    "Zeitfenster von":"Tijdvenster van",
+    "Zeitfenster bis":"Tijdvenster tot",
+    "Akku-Nutzung erlauben":"Accugebruik toestaan",
+    "Alle aktivierten Bedingungen gelten gemeinsam. Leere Sensorfelder deaktivieren die jeweilige Bedingung.":"Alle ingeschakelde voorwaarden moeten gelden. Een leeg sensorveld schakelt die voorwaarde uit.",
+    "Bedingungsbetrieb ohne Akku-Nutzung benötigt aktive Speicherwächter für alle Speicher. Verfügbare Ladeleistung wird berücksichtigt. Bestehende Speichergrenzen gelten immer. Zeitfenster: lokale Home-Assistant-Zeit, auch über Mitternacht.":"Zonder accugebruik zijn actieve bewakers voor alle accu’s vereist. Beschikbaar laadvermogen telt mee. Bestaande accugrenzen blijven gelden. Tijdvensters gebruiken de lokale Home Assistant-tijd en mogen over middernacht lopen.",
+    "Mit Akku-Nutzung wird einzeln zugeschaltet und der Netzbezug anschließend überwacht. Kurzzeitiger Netzbezug ist möglich. Ausschaltverzögerung und Mindestlaufzeit gelten weiterhin.":"Met accugebruik starten verbruikers één voor één, daarna wordt netafname bewaakt. Tijdelijke netafname is mogelijk. Uitschakelvertraging en minimale looptijd blijven gelden.",
     "Überschussmanager":"Overschotmanager","Überschuss":"Overschot","Bezug":"Netafname","Aktive Last":"Actieve belasting",
     "Speicher OK":"Batterij OK","Speicherentladung":"Batterijontlading","Kein Speicherwächter":"Geen batterijbewaking","Netzsensor Fehler":"Fout netsensor",
     "Einstellungen":"Instellingen","Anzeige":"Weergave","Hilfetexte anzeigen":"Helpteksten tonen","Manuell ausschalten und wieder AUTO aktivieren":"Handmatig uitschakelen en terug naar AUTO","Gerät manuell einschalten":"Apparaat handmatig inschakelen","Schließen":"Sluiten","Gesamte Regelung ein/aus":"Regeling aan/uit",
@@ -573,6 +637,29 @@ class SurplusManagerCard extends HTMLElement {
             <label>Mindestpause
               <div class="unitInput"><input id="fMinOff" type="number" min="0" step="60" value="300"><span>s</span></div>
             </label>
+          </div>
+
+          <div class="settingsSection">
+            <div class="sectionTitle">Startbedingungen</div>
+            <label>Regelmodus<select id="fControlMode"><option value="surplus">Überschussbetrieb</option><option value="conditions">Bedingungsbetrieb</option></select></label>
+            <div class="hint">Alle aktivierten Bedingungen gelten gemeinsam. Leere Sensorfelder deaktivieren die jeweilige Bedingung.</div>
+            <label>SoC-Sensor (optional)<input id="fSocEntity" placeholder="sensor.battery_soc"></label>
+            <div class="two">
+              <label>SoC EIN (%)<input id="fSocStart" type="number" min="0" max="100" step="any" required></label>
+              <label>SoC AUS (%)<input id="fSocStop" type="number" min="0" max="100" step="any" required></label>
+            </div>
+            <label>PV-Sensor (optional)<input id="fPvEntity" placeholder="sensor.pv_power"></label>
+            <div class="two">
+              <label>PV EIN (W)<input id="fPvStart" type="number" min="0" step="any" required></label>
+              <label>PV AUS (W)<input id="fPvStop" type="number" min="0" step="any" required></label>
+            </div>
+            <div class="two">
+              <label>Zeitfenster von<input id="fWindowStart" type="time"></label>
+              <label>Zeitfenster bis<input id="fWindowEnd" type="time"></label>
+            </div>
+            <label class="checkLine"><input id="fAllowDischarge" type="checkbox">Akku-Nutzung erlauben</label>
+            <div class="hint">Bedingungsbetrieb ohne Akku-Nutzung benötigt aktive Speicherwächter für alle Speicher. Verfügbare Ladeleistung wird berücksichtigt. Bestehende Speichergrenzen gelten immer. Zeitfenster: lokale Home-Assistant-Zeit, auch über Mitternacht.</div>
+            <div class="hint">Mit Akku-Nutzung wird einzeln zugeschaltet und der Netzbezug anschließend überwacht. Kurzzeitiger Netzbezug ist möglich. Ausschaltverzögerung und Mindestlaufzeit gelten weiterhin.</div>
           </div>
 
           <div id="climateFields" class="climateBox hidden">
@@ -1266,6 +1353,18 @@ class SurplusManagerCard extends HTMLElement {
     q("#fMinOff").value = consumer?.min_off_s ?? 300;
     q("#fClimateMode").value = consumer?.climate_mode || "heat";
     q("#fTemp").value = consumer?.target_temp ?? 21;
+    const conditions = consumer?.conditions || {};
+    q("#fControlMode").value = conditions.control_mode || "surplus";
+    q("#fSocEntity").value = conditions.soc_entity || "";
+    q("#fSocStart").value = conditions.soc_start ?? 80;
+    q("#fSocStop").value = conditions.soc_stop ?? 70;
+    q("#fPvEntity").value = conditions.pv_entity || "";
+    q("#fPvStart").value = conditions.pv_start_w ?? 7000;
+    q("#fPvStop").value = conditions.pv_stop_w ?? 5000;
+    q("#fWindowStart").value = conditions.window_start || "";
+    q("#fWindowEnd").value = conditions.window_end || "";
+    q("#fAllowDischarge").checked = conditions.allow_discharge ?? false;
+
     this._toggleClimateFields(q("#fEntity").value);
     dlg.showModal();
   }
@@ -1301,6 +1400,18 @@ class SurplusManagerCard extends HTMLElement {
       enabled: q("#fEnabled").value === "true",
       min_on_s: Number(q("#fMinOn").value || 0),
       min_off_s: Number(q("#fMinOff").value || 0),
+      conditions: {
+        control_mode: q("#fControlMode").value,
+        soc_entity: q("#fSocEntity").value.trim(),
+        soc_start: Number(q("#fSocStart").value),
+        soc_stop: Number(q("#fSocStop").value),
+        pv_entity: q("#fPvEntity").value.trim(),
+        pv_start_w: Number(q("#fPvStart").value),
+        pv_stop_w: Number(q("#fPvStop").value),
+        window_start: q("#fWindowStart").value,
+        window_end: q("#fWindowEnd").value,
+        allow_discharge: q("#fAllowDischarge").checked,
+      },
       climate_mode: entityId.startsWith("climate.") ? q("#fClimateMode").value : "",
     };
 
@@ -1309,6 +1420,7 @@ class SurplusManagerCard extends HTMLElement {
     }
 
     const editId = dlg.dataset.editId;
+    try {
     if (editId) {
       data.consumer_id = editId;
       await this._hass.callService("surplus_manager", "update_consumer", data);
@@ -1317,6 +1429,9 @@ class SurplusManagerCard extends HTMLElement {
     }
 
     dlg.close();
+    } catch (err) {
+      alert(err.message || String(err));
+    }
   }
 }
 

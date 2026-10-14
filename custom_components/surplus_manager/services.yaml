@@ -1,10 +1,22 @@
 add_consumer:
   name: Verbraucher anlegen
   description: Legt einen neuen Verbraucher an.
+  fields:
+    conditions:
+      name: Startbedingungen
+      description: "Optionales Bedingungen-Objekt: control_mode, soc_entity, soc_start, soc_stop, pv_entity, pv_start_w, pv_stop_w, window_start, window_end, allow_discharge. Siehe README."
+      selector:
+        object:
 
 update_consumer:
   name: Verbraucher bearbeiten
   description: Ändert einen vorhandenen Verbraucher.
+  fields:
+    conditions:
+      name: Startbedingungen
+      description: "Optionales Bedingungen-Objekt: control_mode, soc_entity, soc_start, soc_stop, pv_entity, pv_start_w, pv_stop_w, window_start, window_end, allow_discharge. Siehe README."
+      selector:
+        object:
 
 remove_consumer:
   name: Verbraucher entfernen

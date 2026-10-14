@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from datetime import timedelta
 import logging
+import math
 import time
 import uuid
 from typing import Any, Callable
@@ -12,6 +13,9 @@ from typing import Any, Callable
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.storage import Store
+from homeassistant.util import dt as dt_util
+
+from .conditions import evaluate_conditions, normalize_conditions
 
 from .const import (
     CONF_GRID_POWER_ENTITY,
@@ -102,6 +106,7 @@ class SurplusManager:
         self._start_candidate_id: str | None = None
         self._start_candidate_since: float | None = None
         self._import_since: float | None = None
+        self._condition_stop_since: dict[str, float] = {}
 
     async def async_load(self) -> None:
         stored = await self.store.async_load() or {}
@@ -183,6 +188,7 @@ class SurplusManager:
             climate_mode = "heat_cool"
 
         return {
+            "conditions": normalize_conditions(item.get("conditions", {})),
             "id": str(item.get("id") or uuid.uuid4().hex),
             "name": str(item.get("name") or item.get("entity_id") or "Verbraucher"),
             "entity_id": str(item.get("entity_id") or ""),
@@ -226,6 +232,8 @@ class SurplusManager:
             value = float(state.state)
         except (TypeError, ValueError):
             return None
+        if not math.isfinite(value):
+            return None
         unit = str(state.attributes.get("unit_of_measurement") or "").lower()
         if unit == "kw":
             value *= 1000.0
@@ -237,7 +245,9 @@ class SurplusManager:
             if not guard.get("enabled"):
                 continue
             discharge = self._battery_discharge_w(guard)
-            if discharge is not None and discharge > guard["threshold_w"]:
+            if discharge is None:
+                offenders.append(f"{guard['name']}: Sensor nicht verfügbar")
+            elif discharge > guard["threshold_w"]:
                 offenders.append(
                     f"{guard['name']} {int(round(discharge))} W > {int(round(guard['threshold_w']))} W"
                 )
@@ -272,6 +282,13 @@ class SurplusManager:
             self.grid_valid = False
             return False
 
+        if not math.isfinite(value):
+            self.grid_power_w = None
+            self.export_w = self.import_w = 0.0
+            self.grid_valid = False
+            return False
+        if str(state.attributes.get("unit_of_measurement", "")).lower() == "kw":
+            value *= 1000
         self.grid_power_w = value
         self.grid_valid = True
         if self.export_is_negative:
@@ -309,10 +326,62 @@ class SurplusManager:
             return None
 
         # Sensoren können W oder kW liefern.
+        if not math.isfinite(value):
+            return None
         unit = str(state.attributes.get("unit_of_measurement") or "").lower()
         if unit == "kw":
             value *= 1000.0
         return max(0.0, value)
+
+    def _condition_value(self, entity_id: str, power: bool) -> float | None:
+        state = self.hass.states.get(entity_id)
+        if state is None:
+            return None
+        try:
+            value = float(state.state)
+        except (TypeError, ValueError):
+            return None
+        if not math.isfinite(value):
+            return None
+        if power and str(state.attributes.get("unit_of_measurement", "")).lower() == "kw":
+            value *= 1000
+        return value
+
+    def _conditions_ok(self, consumer, running=False):
+        config = consumer["conditions"]
+        ok, reason = evaluate_conditions(config, running, self._condition_value, dt_util.now())
+        if not ok:
+            return ok, reason
+        if config["control_mode"] == "conditions" and not config["allow_discharge"]:
+            guards = [g for g in self.battery_guards if g["enabled"]]
+            if not guards:
+                return False, "Speicherwächter erforderlich (Akku-Nutzung nicht erlaubt)"
+            for guard in guards:
+                discharge = self._battery_discharge_w(guard)
+                if discharge is None:
+                    return False, "Speicher-Leistungssensor nicht verfügbar"
+                if discharge > guard["threshold_w"]:
+                    return False, "Speicherentladung über der erlaubten Toleranz"
+        return True, reason
+
+    def _start_power_ok(self, consumer):
+        config = consumer["conditions"]
+        if config["control_mode"] == "surplus":
+            return self.export_w >= consumer["power_w"] + self.reserve_w
+        if config["allow_discharge"]:
+            return self.import_w <= self.max_import_w
+        charging = 0.0
+        seen = set()
+        for guard in self.battery_guards:
+            if not guard["enabled"] or guard["entity_id"] in seen:
+                continue
+            seen.add(guard["entity_id"])
+            value = self._condition_value(guard["entity_id"], True)
+            if value is None:
+                return False
+            signed = value if guard["discharge_positive"] else -value
+            charging += max(0.0, -signed)
+        return self.export_w - self.import_w + charging >= consumer["power_w"] + self.reserve_w
 
     async def async_add_battery_guard(self, data: dict[str, Any]) -> dict[str, Any]:
         guard = self._normalize_battery_guard({
@@ -379,6 +448,7 @@ class SurplusManager:
     async def async_add_consumer(self, data: dict[str, Any]) -> dict[str, Any]:
         consumer = self._normalize_consumer(
             {
+                "conditions": data.get("conditions", {}),
                 "id": uuid.uuid4().hex,
                 "name": data["name"],
                 "entity_id": data["entity_id"],
@@ -403,7 +473,9 @@ class SurplusManager:
         if not consumer:
             raise ValueError(f"Unbekannter Verbraucher: {consumer_id}")
 
+        updated = dict(consumer)
         for key in (
+            "conditions",
             "name",
             "entity_id",
             "power_sensor_entity",
@@ -415,11 +487,12 @@ class SurplusManager:
             "target_temp",
         ):
             if key in data:
-                consumer[key] = data[key]
+                updated[key] = data[key]
 
-        normalized = self._normalize_consumer(consumer)
+        normalized = self._normalize_consumer(updated)
         consumer.clear()
         consumer.update(normalized)
+        self._reset_timers()
         await self._save()
         self._notify()
 
@@ -508,6 +581,7 @@ class SurplusManager:
         self._start_candidate_id = None
         self._start_candidate_since = None
         self._import_since = None
+        self._condition_stop_since.clear()
 
     def _stop_candidates(self) -> list[dict[str, Any]]:
         return sorted(
@@ -573,6 +647,42 @@ class SurplusManager:
             else:
                 self._import_since = None
 
+            # Do not start loads while global protection is pending.
+            if self.import_w > self.max_import_w or battery_trigger:
+                self._start_candidate_id = self._start_candidate_since = None
+                self._notify()
+                return
+
+            # Conditions also apply to managed running loads. Respect minimum
+            # runtime and debounce; leave manual/external loads untouched.
+            pending_stop = False
+            for consumer in self._stop_candidates():
+                cid = consumer["id"]
+                if consumer.get("manual_on") or not consumer.get("managed_on"):
+                    self._condition_stop_since.pop(cid, None)
+                    continue
+                ok, reason = self._conditions_ok(consumer, running=True)
+                if ok:
+                    self._condition_stop_since.pop(cid, None)
+                    continue
+                pending_stop = True
+                since = self._condition_stop_since.setdefault(cid, now)
+                if now - since < self.stop_delay_s or now - consumer["last_on_ts"] < consumer["min_on_s"]:
+                    continue
+                if self.mode == MODE_TEST:
+                    self.test_action = f"AUS: {consumer['name']} · {reason}"
+                else:
+                    await self._turn_off(consumer)
+                    self._last_action_ts = time.time()
+                    self._condition_stop_since.pop(cid, None)
+                self._start_candidate_id = self._start_candidate_since = None
+                self._notify()
+                return
+            if pending_stop:
+                self._start_candidate_id = self._start_candidate_since = None
+                self._notify()
+                return
+
             # 2) Verbraucher streng nach EIN-Reihenfolge zuschalten.
             for consumer in self.consumers:
                 if not consumer["enabled"]:
@@ -585,6 +695,8 @@ class SurplusManager:
                     # Ein nicht verfügbares Gerät darf niedrigere Prioritäten
                     # nicht dauerhaft blockieren.
                     continue
+                if not self._conditions_ok(consumer)[0]:
+                    continue
                 if now - consumer.get("last_off_ts", 0) < consumer["min_off_s"]:
                     # Mindestpause einer höheren Priorität blockiert bewusst.
                     self._start_candidate_id = None
@@ -592,8 +704,7 @@ class SurplusManager:
                     self._notify()
                     return
 
-                needed = consumer["power_w"] + self.reserve_w
-                if self.export_w >= needed:
+                if self._start_power_ok(consumer):
                     if self._start_candidate_id != consumer["id"]:
                         self._start_candidate_id = consumer["id"]
                         self._start_candidate_since = now
@@ -848,6 +959,15 @@ class SurplusManager:
                 return f"Testmodus · {self.test_action}", 0
             return "Testmodus – beobachtet nur", 0
 
+        ok, reason = self._conditions_ok(consumer, running=is_on and consumer.get("managed_on", False))
+        if not ok:
+            return reason, 0
+        battery_trigger, battery_reason = self._battery_guard_trigger()
+        if battery_trigger:
+            return battery_reason, 0
+        if self.import_w > self.max_import_w:
+            return "Netzbezug über Grenzwert", 0
+
         if is_on:
             if consumer.get("managed_on"):
                 remaining = _seconds_left(
@@ -874,18 +994,19 @@ class SurplusManager:
                 continue
             if not self._entity_available(higher["entity_id"]):
                 continue
+            if not self._conditions_ok(higher)[0]:
+                continue
             higher_remaining = _seconds_left(
                 higher.get("last_off_ts", 0) + higher["min_off_s"], now
             )
             if higher_remaining:
                 return f"Wartet auf höhere Priorität: {higher['name']}", higher_remaining
-            higher_needed = higher["power_w"] + self.reserve_w
-            if self.export_w < higher_needed:
+            if not self._start_power_ok(higher):
                 return f"Höhere Priorität wartet: {higher['name']}", 0
 
         needed = consumer["power_w"] + self.reserve_w
-        if self.export_w < needed:
-            return f"Zu wenig Überschuss · benötigt {int(round(needed))} W", 0
+        if not self._start_power_ok(consumer):
+            return f"Zu wenig verfügbare Leistung · benötigt {int(round(needed))} W", 0
 
         if self._start_candidate_id == consumer["id"] and self._start_candidate_since:
             remaining = _seconds_left(
