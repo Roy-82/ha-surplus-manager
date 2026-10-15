@@ -23,7 +23,7 @@ Ab v2.1 wird die Karte direkt mit der Integration ausgeliefert. `/config/www` is
 
 Unter Einstellungen → Dashboards → Ressourcen einmalig eintragen:
 
-- URL: `/surplus_manager/surplus-manager-card.js?v=2.4.0`
+- URL: `/surplus_manager/surplus-manager-card.js?v=2.4.1`
 - Typ: JavaScript-Modul
 
 Danach werden Backend und Karte gemeinsam über HACS aktualisiert.
@@ -147,7 +147,7 @@ Akku-Nutzung zunächst ausgeschaltet lassen und Speicherwächter konfigurieren.
 Damit darf die Pumpe auch einen Teil der laufenden Speicherladung nutzen.
 
 Nach dem Update Home Assistant neu starten und die Kartenressource auf
-`/surplus_manager/surplus-manager-card.js?v=2.4.0` setzen bzw. den Browsercache neu laden.
+`/surplus_manager/surplus-manager-card.js?v=2.4.1` setzen bzw. den Browsercache neu laden.
 
 ### Service-API
 
@@ -177,3 +177,30 @@ Leistungssensoren werden in W oder kW gelesen; SoC wird in Prozent erwartet.
 `python -m unittest discover -s tests -v` prüft die Regellogik mit simulierten
 Home-Assistant-Grenzen und kontrollierter Uhrzeit. Dies ersetzt keinen Praxistest
 mit realen Wechselrichtern, Speichern und Verbrauchern.
+
+
+## v2.4.1 – Schmale Karten und card-mod
+
+- Die Kartenbreite bestimmt das Layout: bis einschließlich 650 px stehen
+  Geräteinformationen untereinander, die Werkzeugleiste unter der Liste und die
+  Reihenfolge-Schaltflächen in eigenen Zeilen. Auf breiteren Karten bleibt die
+  kompakte Zeilenansicht. Das funktioniert auch in schmalen Desktop-Spalten.
+- Messwertaktualisierungen ersetzen nicht mehr die gesamte Oberfläche.
+  Bestehende Kartenelemente sowie von `card-mod` eingefügte Elemente und Stile
+  bleiben erhalten. Entfernte Verbraucher werden weiterhin aus der Liste entfernt.
+- Ereignisbehandlung wird bei Aktualisierungen erneuert, ohne zusätzliche
+  Schaltaufrufe anzusammeln. Offene Eingaben bleiben bei Messwertupdates erhalten.
+- Keine zusätzliche Layout-Einstellung erforderlich. Moderne Browser mit
+  CSS-Container-Queries werden vorausgesetzt.
+
+Nach dem HACS-Update Home Assistant neu starten und die Dashboard-Ressource auf
+`/surplus_manager/surplus-manager-card.js?v=2.4.1` setzen, anschließend neu laden.
+Bestehende eigene CSS-Regeln können die neue responsive Anordnung überschreiben;
+bei Bedarf diese Regeln anpassen.
+
+Browser-Regressionstest: `npm install --no-save playwright@1.51.1`,
+`npx playwright install chromium --only-shell`, dann `node tests/card_browser.cjs`.
+Der isolierte Test prüft eingefügte Styles/Elemente, 30 Kombinationen aus Sprache
+und Kartenbreite, eine Handyansicht mit Dialog, Werteupdates, Formularerhalt und
+Service-Aufrufe. Er ersetzt keinen Test in einer vollständigen Home-Assistant-
+Installation mit der konkreten card-mod-Konfiguration des Nutzers.

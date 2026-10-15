@@ -1,4 +1,4 @@
-const SURPLUS_MANAGER_CARD_VERSION = "2.4.0";
+const SURPLUS_MANAGER_CARD_VERSION = "2.4.1";
 
 const SURPLUS_MANAGER_TRANSLATIONS = {
   de: {},
@@ -197,6 +197,8 @@ class SurplusManagerCard extends HTMLElement {
     this._selectedId = null;
     this._orderMode = "start";
     this._renderQueued = false;
+    this._ownedChildren = new WeakMap();
+    this._ownedAttributes = new WeakMap();
     this._dragId = null;
     this._showHints = localStorage.getItem("surplus_manager_show_hints") !== "false";
   }
@@ -303,10 +305,10 @@ class SurplusManagerCard extends HTMLElement {
     return en;
   }
 
-  _applyTranslations() {
+  _applyTranslations(root = this.shadowRoot) {
     const lang = this._effectiveLanguage();
-    if (lang === "de" || !this.shadowRoot) return;
-    const walker = document.createTreeWalker(this.shadowRoot, NodeFilter.SHOW_TEXT);
+    if (lang === "de" || !root) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
     for (const node of nodes) {
@@ -328,7 +330,7 @@ class SurplusManagerCard extends HTMLElement {
         .replace(/ · Grenze /, " · " + this._tr("Grenze") + " ");
       if (translated !== trimmed) node.nodeValue = raw.replace(trimmed, translated);
     }
-    for (const el of this.shadowRoot.querySelectorAll("[title],[aria-label],[placeholder]")) {
+    for (const el of root.querySelectorAll("[title],[aria-label],[placeholder]")) {
       for (const attr of ["title","aria-label","placeholder"]) {
         if (el.hasAttribute(attr)) el.setAttribute(attr, this._tr(el.getAttribute(attr)));
       }
@@ -378,7 +380,7 @@ class SurplusManagerCard extends HTMLElement {
     const state = this._state();
 
     if (!this._hass || !state) {
-      this.shadowRoot.innerHTML = `${this._styles()}<ha-card><div class="error">Entität ${this._esc(this._config.entity)} nicht gefunden.</div></ha-card>`;
+      this._updateDOM(`${this._styles()}<ha-card><div class="error">Entität ${this._esc(this._config.entity)} nicht gefunden.</div></ha-card>`);
       return;
     }
 
@@ -397,7 +399,7 @@ class SurplusManagerCard extends HTMLElement {
       ? `Speicherentladung ${triggeredBatteries.map((g) => g.name).join(", ")}`
       : batteryGuards.length ? "Speicher OK" : "Kein Speicherwächter";
 
-    this.shadowRoot.innerHTML = `
+    this._updateDOM(`
       ${this._styles()}
       <ha-card>
         <div class="card">
@@ -690,13 +692,77 @@ class SurplusManagerCard extends HTMLElement {
           </div>
         </form>
       </dialog>
-    `;
+    `);
 
-    this._applyTranslations();
-    if (!this._showHints) {
-      this.shadowRoot.querySelectorAll(".hint, .footer").forEach((el) => el.classList.add("hiddenHint"));
-    }
     this._wire(consumers);
+  }
+
+  _updateDOM(html) {
+    // Only reconcile nodes created by this card. Keep card-mod styles/elements
+    // and HA custom-element internals attached to their existing parents.
+    const template = document.createElement("template");
+    template.innerHTML = html;
+    this._applyTranslations(template.content);
+    if (!this._showHints) {
+      template.content.querySelectorAll(".hint, .footer").forEach((el) => el.classList.add("hiddenHint"));
+    }
+    this._patchChildren(this.shadowRoot, template.content);
+  }
+
+  _nodeKey(node) {
+    if (node.nodeType !== Node.ELEMENT_NODE) return String(node.nodeType);
+    return `${node.localName}:${node.id || node.getAttribute("data-id") || node.classList[0] || ""}`;
+  }
+
+  _rememberTree(node) {
+    const children = [...node.childNodes];
+    this._ownedChildren.set(node, children);
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      this._ownedAttributes.set(node, new Map([...node.attributes].map((a) => [a.name, a.value])));
+    }
+    children.forEach((child) => this._rememberTree(child));
+  }
+
+  _patchChildren(parent, source) {
+    const old = (this._ownedChildren.get(parent) || []).filter((node) => node.parentNode === parent);
+    const remaining = new Set(old);
+    const desired = [];
+    for (const fresh of source.childNodes) {
+      const key = this._nodeKey(fresh);
+      let node = old.find((candidate) => remaining.has(candidate) && this._nodeKey(candidate) === key);
+      if (node) {
+        remaining.delete(node);
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const before = this._ownedAttributes.get(node) || new Map();
+          const after = new Map([...fresh.attributes].map((a) => [a.name, a.value]));
+          for (const [name] of before) {
+            if (!after.has(name)) node.removeAttribute(name);
+          }
+          for (const [name, value] of after) {
+            if (before.get(name) !== value) node.setAttribute(name, value);
+          }
+          this._ownedAttributes.set(node, after);
+          if (node instanceof HTMLInputElement && node.type === "checkbox") node.checked = fresh.checked;
+          this._patchChildren(node, fresh);
+        } else if (node.nodeValue !== fresh.nodeValue) {
+          node.nodeValue = fresh.nodeValue;
+        }
+      } else {
+        node = fresh.cloneNode(true);
+        this._rememberTree(node);
+      }
+      desired.push(node);
+    }
+    for (const node of remaining) node.remove();
+    // Leave externally inserted siblings alone, and don't detach unchanged nodes.
+    const managed = new Set(desired);
+    let cursor = parent.firstChild;
+    for (const node of desired) {
+      while (cursor && !managed.has(cursor)) cursor = cursor.nextSibling;
+      if (node !== cursor) parent.insertBefore(node, cursor);
+      cursor = node.nextSibling;
+    }
+    this._ownedChildren.set(parent, desired);
   }
 
   _row(c) {
@@ -763,9 +829,18 @@ class SurplusManagerCard extends HTMLElement {
           --sm-border: color-mix(in srgb, var(--primary-text-color) 16%, transparent);
           --sm-muted: var(--secondary-text-color);
           display: block;
+          min-width: 0;
+          container: surplus-manager / inline-size;
         }
         ha-card { overflow: hidden; }
         .card { padding: 18px; }
+        .header > div:first-child, .list, .body, .storageText { min-width:0; }
+        .headerActions, .pill ha-icon { flex-shrink:0; }
+        .pill { max-width:100%; box-sizing:border-box; overflow-wrap:anywhere; }
+        .title { overflow-wrap:anywhere; }
+        .orderTabs button { min-height:40px; height:auto; padding:8px; min-width:0; }
+        .batteryRow > div, .diagGrid > *, label { min-width:0; overflow-wrap:anywhere; }
+
         .header {
           display: flex; align-items: flex-start; justify-content: space-between;
           gap: 16px; margin-bottom: 12px;
@@ -1029,23 +1104,33 @@ class SurplusManagerCard extends HTMLElement {
         .dialogActions .primary { background:var(--primary-color); color:var(--text-primary-color, white); }
         .error { padding:20px; color:var(--error-color); }
 
-        @media (max-width: 650px) {
+        @container surplus-manager (max-width: 650px) {
           .card { padding:12px; }
           .title { font-size:21px; }
+          .header { flex-direction:column; gap:8px; }
+          .headerActions { align-self:flex-end; }
           .summary { gap:5px; }
-          .body { grid-template-columns:1fr 44px; gap:7px; }
-          .listControls { margin-right:51px; }
+          .body { grid-template-columns:minmax(0,1fr); gap:10px; }
+          .listControls { margin-right:0; }
+          .toolbar { flex-direction:row; flex-wrap:wrap; gap:8px; }
           .toolbar button { width:42px; height:42px; }
           .row {
-            grid-template-columns: 20px 28px 20px 30px minmax(0,1fr);
-            padding:5px 7px;
+            grid-template-columns:28px 24px 30px minmax(0,1fr);
+            gap:6px; padding:10px;
           }
-          .status {
-            grid-column:5; justify-self:start; margin-bottom:5px;
-          }
-          .two { grid-template-columns:1fr; gap:0; }
           .dragHandle { display:none; }
-          .modeBar button, .orderTabs button { font-size:11px; }
+          .consumerToggle { grid-column:1; grid-row:1; margin:0; }
+          .prio { grid-column:2; grid-row:1; }
+          .deviceIcon { grid-column:3; grid-row:1; }
+          .status { grid-column:4; grid-row:1; justify-self:end; max-width:100%; min-width:0; white-space:normal; }
+          .main { grid-column:1 / -1; grid-row:2; }
+          .name, .meta, .reason { white-space:normal; overflow-wrap:anywhere; }
+          .orderTabs { grid-template-columns:minmax(0,1fr); }
+        }
+        @media (max-width: 600px) {
+          .two { grid-template-columns:minmax(0,1fr); gap:0; }
+          form { padding:14px; }
+          .batteryRow, .gridSensorActions { flex-wrap:wrap; }
         }
         .languageRow { display:flex; gap:10px; align-items:center; }
         .languageRow select { flex:1; min-width:0; }
@@ -1072,15 +1157,20 @@ class SurplusManagerCard extends HTMLElement {
   }
 
   _wire(consumers) {
+    this._eventController?.abort();
+    this._eventController = new AbortController();
+    const on = (element, event, handler) => element?.addEventListener(event, handler, {
+      signal: this._eventController.signal,
+    });
     const q = (s) => this.shadowRoot.querySelector(s);
     const qa = (s) => [...this.shadowRoot.querySelectorAll(s)];
     const state = this._state();
     const entryId = state?.attributes?.config_entry_id;
 
-    q("#settingsButton")?.addEventListener("click", () => q("#settingsEditor")?.showModal());
-    q("#closeSettingsEditor")?.addEventListener("click", () => q("#settingsEditor")?.close());
-    q("#settingsEditor")?.addEventListener("close", () => this._queueRender());
-    q("#saveLanguage")?.addEventListener("click", async () => {
+    on(q("#settingsButton"), "click", () => q("#settingsEditor")?.showModal());
+    on(q("#closeSettingsEditor"), "click", () => q("#settingsEditor")?.close());
+    on(q("#settingsEditor"), "close", () => this._queueRender());
+    on(q("#saveLanguage"), "click", async () => {
       const language = String(q("#settingsLanguage")?.value || "auto");
       await this._hass.callService("surplus_manager", "set_language", {
         config_entry_id: entryId,
@@ -1088,7 +1178,7 @@ class SurplusManagerCard extends HTMLElement {
       });
       q("#settingsEditor")?.close();
     });
-        q("#showHints")?.addEventListener("change", (ev) => {
+        on(q("#showHints"), "change", (ev) => {
       this._showHints = !!ev.target.checked;
       localStorage.setItem("surplus_manager_show_hints", String(this._showHints));
       this._render();
@@ -1100,7 +1190,7 @@ class SurplusManagerCard extends HTMLElement {
       gridPicker.includeDomains = ["sensor"];
       gridPicker.allowCustomEntity = true;
     }
-    q("#saveGridSensor")?.addEventListener("click", async () => {
+    on(q("#saveGridSensor"), "click", async () => {
       const entityId = String(gridPicker?.value || "").trim();
       if (!entityId || !entityId.startsWith("sensor.")) {
         alert(this._tr("Bitte einen gültigen Sensor auswählen."));
@@ -1112,8 +1202,8 @@ class SurplusManagerCard extends HTMLElement {
       });
       q("#settingsEditor")?.close();
     });
-    q("#openBatteryEditor")?.addEventListener("click", () => q("#batteryEditor")?.showModal());
-    q("#saveReserve")?.addEventListener("click", async () => {
+    on(q("#openBatteryEditor"), "click", () => q("#batteryEditor")?.showModal());
+    on(q("#saveReserve"), "click", async () => {
       const reserve = Number(q("#settingsReserve")?.value);
       if (!Number.isFinite(reserve) || reserve < 0) {
         alert(this._tr("Bitte eine gültige Reserve in Watt eintragen."));
@@ -1125,20 +1215,20 @@ class SurplusManagerCard extends HTMLElement {
       });
       q("#settingsEditor")?.close();
     });
-    q("#closeBatteryEditor")?.addEventListener("click", () => q("#batteryEditor")?.close());
-    q("#batteryEditor")?.addEventListener("close", () => {
+    on(q("#closeBatteryEditor"), "click", () => q("#batteryEditor")?.close());
+    on(q("#batteryEditor"), "close", () => {
       if (!q("#settingsEditor")?.open) this._queueRender();
     });
-    q("#resetBatteryForm")?.addEventListener("click", () => this._fillBatteryForm(null));
-    q("#saveBattery")?.addEventListener("click", () => this._saveBattery());
+    on(q("#resetBatteryForm"), "click", () => this._fillBatteryForm(null));
+    on(q("#saveBattery"), "click", () => this._saveBattery());
     qa(".editBattery").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      on(btn, "click", () => {
         const guard = (state.attributes.battery_guards || []).find((g) => g.id === btn.dataset.id);
         if (guard) this._fillBatteryForm(guard);
       });
     });
     qa(".deleteBattery").forEach((btn) => {
-      btn.addEventListener("click", async () => {
+      on(btn, "click", async () => {
         const guard = (state.attributes.battery_guards || []).find((g) => g.id === btn.dataset.id);
         if (!guard) return;
         if (!confirm(`Speicherwächter "${guard.name}" wirklich entfernen?`)) return;
@@ -1150,7 +1240,7 @@ class SurplusManagerCard extends HTMLElement {
       });
     });
 
-    q("#masterToggle")?.addEventListener("change", async (ev) => {
+    on(q("#masterToggle"), "change", async (ev) => {
       await this._hass.callService("surplus_manager", "set_enabled", {
         config_entry_id: entryId,
         enabled: ev.target.checked,
@@ -1158,7 +1248,7 @@ class SurplusManagerCard extends HTMLElement {
     });
 
     qa(".modeBar button").forEach((button) => {
-      button.addEventListener("click", async () => {
+      on(button, "click", async () => {
         await this._hass.callService("surplus_manager", "set_mode", {
           config_entry_id: entryId,
           mode: button.dataset.mode,
@@ -1167,47 +1257,47 @@ class SurplusManagerCard extends HTMLElement {
       });
     });
 
-    q("#startOrderTab")?.addEventListener("click", () => {
+    on(q("#startOrderTab"), "click", () => {
       this._orderMode = "start";
       this._selectedId = null;
       this._render();
     });
-    q("#stopOrderTab")?.addEventListener("click", () => {
+    on(q("#stopOrderTab"), "click", () => {
       this._orderMode = "stop";
       this._selectedId = null;
       this._render();
     });
 
     qa(".row").forEach((row) => {
-      row.addEventListener("click", (ev) => {
+      on(row, "click", (ev) => {
         if (ev.target.closest(".consumerToggle, .manualToggle, .dragHandle")) return;
         this._selectedId = row.dataset.id;
         this._render();
       });
 
-      row.addEventListener("dblclick", (ev) => {
+      on(row, "dblclick", (ev) => {
         if (ev.target.closest(".consumerToggle, .manualToggle, .dragHandle")) return;
         const c = consumers.find((x) => x.id === row.dataset.id);
         if (c) this._openEditor(c);
       });
 
-      row.addEventListener("dragstart", (ev) => {
+      on(row, "dragstart", (ev) => {
         this._dragId = row.dataset.id;
         row.classList.add("dragging");
         ev.dataTransfer.effectAllowed = "move";
         ev.dataTransfer.setData("text/plain", this._dragId);
       });
-      row.addEventListener("dragend", () => {
+      on(row, "dragend", () => {
         this._dragId = null;
         qa(".row").forEach((r) => r.classList.remove("dragging", "dragover"));
       });
-      row.addEventListener("dragover", (ev) => {
+      on(row, "dragover", (ev) => {
         ev.preventDefault();
         if (!this._dragId || this._dragId === row.dataset.id) return;
         row.classList.add("dragover");
       });
-      row.addEventListener("dragleave", () => row.classList.remove("dragover"));
-      row.addEventListener("drop", async (ev) => {
+      on(row, "dragleave", () => row.classList.remove("dragover"));
+      on(row, "drop", async (ev) => {
         ev.preventDefault();
         row.classList.remove("dragover");
         const dragId = this._dragId || ev.dataTransfer.getData("text/plain");
@@ -1223,8 +1313,8 @@ class SurplusManagerCard extends HTMLElement {
     });
 
     qa(".consumerToggle").forEach((box) => {
-      box.addEventListener("click", (ev) => ev.stopPropagation());
-      box.addEventListener("change", async (ev) => {
+      on(box, "click", (ev) => ev.stopPropagation());
+      on(box, "change", async (ev) => {
         await this._hass.callService("surplus_manager", "set_consumer_enabled", {
           config_entry_id: entryId,
           consumer_id: ev.target.dataset.id,
@@ -1234,11 +1324,12 @@ class SurplusManagerCard extends HTMLElement {
     });
 
     qa(".manualToggle").forEach((button) => {
-      button.addEventListener("click", async (ev) => {
+      on(button, "click", async (ev) => {
         ev.stopPropagation();
         const id = ev.currentTarget.dataset.id;
         const isManual = ev.currentTarget.dataset.manual === "true";
-        ev.currentTarget.disabled = true;
+        const button = ev.currentTarget;
+        button.disabled = true;
         try {
           await this._hass.callService("surplus_manager", "set_manual", {
             config_entry_id: entryId,
@@ -1247,22 +1338,22 @@ class SurplusManagerCard extends HTMLElement {
           });
         } finally {
           setTimeout(() => {
-            if (ev.currentTarget) ev.currentTarget.disabled = false;
+            button.disabled = false;
           }, 3000);
         }
       });
     });
 
-    q("#moveUp")?.addEventListener("click", () => this._move("up"));
-    q("#moveDown")?.addEventListener("click", () => this._move("down"));
-    q("#add")?.addEventListener("click", () => this._openEditor(null));
+    on(q("#moveUp"), "click", () => this._move("up"));
+    on(q("#moveDown"), "click", () => this._move("down"));
+    on(q("#add"), "click", () => this._openEditor(null));
 
-    q("#edit")?.addEventListener("click", () => {
+    on(q("#edit"), "click", () => {
       const c = consumers.find((x) => x.id === this._selectedId);
       if (c) this._openEditor(c);
     });
 
-    q("#remove")?.addEventListener("click", async () => {
+    on(q("#remove"), "click", async () => {
       if (!this._selectedId) return;
       const c = consumers.find((x) => x.id === this._selectedId);
       if (!c) return;
@@ -1275,11 +1366,11 @@ class SurplusManagerCard extends HTMLElement {
       this._selectedId = null;
     });
 
-    q("#fEntity")?.addEventListener("input", (ev) => this._toggleClimateFields(ev.target.value));
-    q("#saveConsumer")?.addEventListener("click", () => this._saveEditor());
-    q("#cancelEditor")?.addEventListener("click", () => q("#editor")?.close());
-    q("#closeEditor")?.addEventListener("click", () => q("#editor")?.close());
-    q("#editor")?.addEventListener("close", () => this._queueRender());
+    on(q("#fEntity"), "input", (ev) => this._toggleClimateFields(ev.target.value));
+    on(q("#saveConsumer"), "click", () => this._saveEditor());
+    on(q("#cancelEditor"), "click", () => q("#editor")?.close());
+    on(q("#closeEditor"), "click", () => q("#editor")?.close());
+    on(q("#editor"), "close", () => this._queueRender());
   }
 
   _fillBatteryForm(guard) {
