@@ -18,3 +18,14 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - run: python -m compileall -q custom_components
       - run: node --check custom_components/surplus_manager/frontend/surplus-manager-card.js
+
+  card-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save playwright@1.51.1
+      - run: npx playwright install --with-deps chromium --only-shell
+      - run: node tests/card_browser.cjs
