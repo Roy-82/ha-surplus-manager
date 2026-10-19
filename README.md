@@ -23,7 +23,7 @@ Ab v2.1 wird die Karte direkt mit der Integration ausgeliefert. `/config/www` is
 
 Unter Einstellungen → Dashboards → Ressourcen einmalig eintragen:
 
-- URL: `/surplus_manager/surplus-manager-card.js?v=2.4.1`
+- URL: `/surplus_manager/surplus-manager-card.js?v=2.4.2`
 - Typ: JavaScript-Modul
 
 Danach werden Backend und Karte gemeinsam über HACS aktualisiert.
@@ -204,3 +204,9 @@ Der isolierte Test prüft eingefügte Styles/Elemente, 30 Kombinationen aus Spra
 und Kartenbreite, eine Handyansicht mit Dialog, Werteupdates, Formularerhalt und
 Service-Aufrufe. Er ersetzt keinen Test in einer vollständigen Home-Assistant-
 Installation mit der konkreten card-mod-Konfiguration des Nutzers.
+
+
+## v2.4.2
+
+- UI-Verbesserung: Die Felder für die Zustandssteuerung werden nur noch angezeigt, wenn der Regelmodus **Bedingungsbetrieb** ausgewählt ist.
+- Im **Überschussbetrieb** bleiben diese Optionen ausgeblendet, um die Konfiguration übersichtlicher zu machen.
