@@ -1,4 +1,4 @@
-const SURPLUS_MANAGER_CARD_VERSION = "2.4.1";
+const SURPLUS_MANAGER_CARD_VERSION = "2.4.2";
 
 const SURPLUS_MANAGER_TRANSLATIONS = {
   de: {},
@@ -644,24 +644,26 @@ class SurplusManagerCard extends HTMLElement {
           <div class="settingsSection">
             <div class="sectionTitle">Startbedingungen</div>
             <label>Regelmodus<select id="fControlMode"><option value="surplus">Überschussbetrieb</option><option value="conditions">Bedingungsbetrieb</option></select></label>
-            <div class="hint">Alle aktivierten Bedingungen gelten gemeinsam. Leere Sensorfelder deaktivieren die jeweilige Bedingung.</div>
-            <label>SoC-Sensor (optional)<input id="fSocEntity" placeholder="sensor.battery_soc"></label>
-            <div class="two">
-              <label>SoC EIN (%)<input id="fSocStart" type="number" min="0" max="100" step="any" required></label>
-              <label>SoC AUS (%)<input id="fSocStop" type="number" min="0" max="100" step="any" required></label>
+            <div id="conditionControlFields">
+              <div class="hint">Alle aktivierten Bedingungen gelten gemeinsam. Leere Sensorfelder deaktivieren die jeweilige Bedingung.</div>
+              <label>SoC-Sensor (optional)<input id="fSocEntity" placeholder="sensor.battery_soc"></label>
+              <div class="two">
+                <label>SoC EIN (%)<input id="fSocStart" type="number" min="0" max="100" step="any" required></label>
+                <label>SoC AUS (%)<input id="fSocStop" type="number" min="0" max="100" step="any" required></label>
+              </div>
+              <label>PV-Sensor (optional)<input id="fPvEntity" placeholder="sensor.pv_power"></label>
+              <div class="two">
+                <label>PV EIN (W)<input id="fPvStart" type="number" min="0" step="any" required></label>
+                <label>PV AUS (W)<input id="fPvStop" type="number" min="0" step="any" required></label>
+              </div>
+              <div class="two">
+                <label>Zeitfenster von<input id="fWindowStart" type="time"></label>
+                <label>Zeitfenster bis<input id="fWindowEnd" type="time"></label>
+              </div>
+              <label class="checkLine"><input id="fAllowDischarge" type="checkbox">Akku-Nutzung erlauben</label>
+              <div class="hint">Bedingungsbetrieb ohne Akku-Nutzung benötigt aktive Speicherwächter für alle Speicher. Verfügbare Ladeleistung wird berücksichtigt. Bestehende Speichergrenzen gelten immer. Zeitfenster: lokale Home-Assistant-Zeit, auch über Mitternacht.</div>
+              <div class="hint">Mit Akku-Nutzung wird einzeln zugeschaltet und der Netzbezug anschließend überwacht. Kurzzeitiger Netzbezug ist möglich. Ausschaltverzögerung und Mindestlaufzeit gelten weiterhin.</div>
             </div>
-            <label>PV-Sensor (optional)<input id="fPvEntity" placeholder="sensor.pv_power"></label>
-            <div class="two">
-              <label>PV EIN (W)<input id="fPvStart" type="number" min="0" step="any" required></label>
-              <label>PV AUS (W)<input id="fPvStop" type="number" min="0" step="any" required></label>
-            </div>
-            <div class="two">
-              <label>Zeitfenster von<input id="fWindowStart" type="time"></label>
-              <label>Zeitfenster bis<input id="fWindowEnd" type="time"></label>
-            </div>
-            <label class="checkLine"><input id="fAllowDischarge" type="checkbox">Akku-Nutzung erlauben</label>
-            <div class="hint">Bedingungsbetrieb ohne Akku-Nutzung benötigt aktive Speicherwächter für alle Speicher. Verfügbare Ladeleistung wird berücksichtigt. Bestehende Speichergrenzen gelten immer. Zeitfenster: lokale Home-Assistant-Zeit, auch über Mitternacht.</div>
-            <div class="hint">Mit Akku-Nutzung wird einzeln zugeschaltet und der Netzbezug anschließend überwacht. Kurzzeitiger Netzbezug ist möglich. Ausschaltverzögerung und Mindestlaufzeit gelten weiterhin.</div>
           </div>
 
           <div id="climateFields" class="climateBox hidden">
@@ -1367,6 +1369,7 @@ class SurplusManagerCard extends HTMLElement {
     });
 
     on(q("#fEntity"), "input", (ev) => this._toggleClimateFields(ev.target.value));
+    on(q("#fControlMode"), "change", (ev) => this._toggleConditionFields(ev.target.value));
     on(q("#saveConsumer"), "click", () => this._saveEditor());
     on(q("#cancelEditor"), "click", () => q("#editor")?.close());
     on(q("#closeEditor"), "click", () => q("#editor")?.close());
@@ -1428,6 +1431,12 @@ class SurplusManagerCard extends HTMLElement {
     box.classList.toggle("hidden", !String(entityId || "").startsWith("climate."));
   }
 
+  _toggleConditionFields(mode) {
+    const box = this.shadowRoot.querySelector("#conditionControlFields");
+    if (!box) return;
+    box.classList.toggle("hidden", String(mode || "surplus") !== "conditions");
+  }
+
   _openEditor(consumer) {
     const q = (s) => this.shadowRoot.querySelector(s);
     const dlg = q("#editor");
@@ -1457,6 +1466,7 @@ class SurplusManagerCard extends HTMLElement {
     q("#fAllowDischarge").checked = conditions.allow_discharge ?? false;
 
     this._toggleClimateFields(q("#fEntity").value);
+    this._toggleConditionFields(q("#fControlMode").value);
     dlg.showModal();
   }
 
