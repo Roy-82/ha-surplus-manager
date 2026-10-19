@@ -1,4 +1,4 @@
-const SURPLUS_MANAGER_CARD_VERSION = "2.4.2";
+const SURPLUS_MANAGER_CARD_VERSION = "2.4.3";
 
 const SURPLUS_MANAGER_TRANSLATIONS = {
   de: {},
@@ -459,8 +459,8 @@ class SurplusManagerCard extends HTMLElement {
 
           <div class="listControls">
             <div class="footer">
-              ${this._orderMode === "start" ? "Oben = zuerst einschalten" : "Oben = zuerst abschalten"}
-              · Zeilen können am PC auch per Drag & Drop sortiert werden
+              ${this._tr(this._orderMode === "start" ? "Oben = zuerst einschalten" : "Oben = zuerst abschalten")}
+              · ${this._tr("Zeilen können am PC auch per Drag & Drop sortiert werden")}
             </div>
 
             <div class="orderTabs bottomTabs">
