@@ -23,7 +23,7 @@ Ab v2.1 wird die Karte direkt mit der Integration ausgeliefert. `/config/www` is
 
 Unter Einstellungen → Dashboards → Ressourcen einmalig eintragen:
 
-- URL: `/surplus_manager/surplus-manager-card.js?v=2.4.2`
+- URL: `/surplus_manager/surplus-manager-card.js?v=2.4.3`
 - Typ: JavaScript-Modul
 
 Danach werden Backend und Karte gemeinsam über HACS aktualisiert.
@@ -147,7 +147,7 @@ Akku-Nutzung zunächst ausgeschaltet lassen und Speicherwächter konfigurieren.
 Damit darf die Pumpe auch einen Teil der laufenden Speicherladung nutzen.
 
 Nach dem Update Home Assistant neu starten und die Kartenressource auf
-`/surplus_manager/surplus-manager-card.js?v=2.4.1` setzen bzw. den Browsercache neu laden.
+`/surplus_manager/surplus-manager-card.js?v=2.4.3` setzen bzw. den Browsercache neu laden.
 
 ### Service-API
 
@@ -210,3 +210,9 @@ Installation mit der konkreten card-mod-Konfiguration des Nutzers.
 
 - UI-Verbesserung: Die Felder für die Zustandssteuerung werden nur noch angezeigt, wenn der Regelmodus **Bedingungsbetrieb** ausgewählt ist.
 - Im **Überschussbetrieb** bleiben diese Optionen ausgeblendet, um die Konfiguration übersichtlicher zu machen.
+
+
+## v2.4.3
+
+- Fix: Der Hinweistext am unteren Rand der Dashboard-Karte wird jetzt vollständig übersetzt.
+- Die beiden Textteile werden nun einzeln über die Übersetzungsfunktion gerendert, statt als gemeinsamer Textknoten.
